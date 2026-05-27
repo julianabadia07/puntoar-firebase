@@ -1,7 +1,13 @@
 {
   "rewrites": [
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/", "destination": "/admin/index.html" },
     { "source": "/admin/:path*", "destination": "/admin/:path*" },
+    { "source": "/manual", "destination": "/manual/index.html" },
+    { "source": "/manual/", "destination": "/manual/index.html" },
+    { "source": "/manual/:path*", "destination": "/manual/:path*" },
     { "source": "/seed", "destination": "/seed.html" },
+    { "source": "/", "destination": "/public/index.html" },
     { "source": "/:path*", "destination": "/public/:path*" }
   ]
 }
