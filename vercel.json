@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/admin/:path*", "destination": "/admin/:path*" },
+    { "source": "/seed", "destination": "/seed.html" },
+    { "source": "/:path*", "destination": "/public/:path*" }
+  ]
+}
