@@ -1,0 +1,11 @@
+{
+  "name": "puntoar-plataforma",
+  "version": "2.0.0",
+  "description": "PuntoAr Obras Civiles – Plataforma de propiedades en alquiler con Firebase",
+  "scripts": {
+    "start": "npx serve . -p 5354 --no-clipboard",
+    "dev": "npx serve . -p 5354 --no-clipboard"
+  },
+  "keywords": ["inmobiliaria", "alquiler", "cordoba", "firebase"],
+  "author": "PuntoAr Obras Civiles"
+}

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PuntoAr · Manual de Usuario</title>
+<style>
+:root{
+  --v:#4aaa5a;--vd:#358944;--vl:#e8f5eb;
+  --n:#1a1a1a;--g:#555;--gl:#f4f5f4;
+  --w:#fff;--r:12px;
+  --warn:#f59e0b;--info:#3b82f6;--danger:#ef4444;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8f9f7;color:var(--n);line-height:1.6}
+
+/* HEADER */
+.site-header{background:linear-gradient(135deg,#111 0%,#1e3d22 55%,#2e6635 100%);color:#fff;padding:2.5rem 5vw 2rem;text-align:center}
+.site-header .logo{font-family:Georgia,serif;font-size:1.8rem;font-weight:700;margin-bottom:.3rem}
+.site-header .logo span{color:var(--v)}
+.site-header h1{font-size:clamp(1.4rem,3vw,2rem);font-weight:300;opacity:.9;margin-bottom:.5rem}
+.site-header p{opacity:.65;font-size:.92rem}
+
+/* NAV */
+.toc{background:var(--w);border-bottom:1px solid #e0e8e2;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.toc-inner{display:flex;gap:0;overflow-x:auto;max-width:1100px;margin:0 auto;padding:0 2rem;scrollbar-width:none}
+.toc-inner::-webkit-scrollbar{display:none}
+.toc-item{padding:.75rem 1.2rem;font-size:.84rem;font-weight:600;color:var(--g);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .18s;flex-shrink:0;background:none;border-top:none;border-left:none;border-right:none}
+.toc-item:hover{color:var(--v)}
+.toc-item.active{color:var(--v);border-bottom-color:var(--v)}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem}
+
+/* SECTIONS */
+.doc-section{display:none;animation:fadeIn .3s ease}
+.doc-section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* TYPOGRAPHY */
+h2{font-size:1.6rem;color:var(--n);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+h2 .icon{font-size:1.8rem}
+h3{font-size:1.1rem;color:var(--vd);margin:1.8rem 0 .6rem;display:flex;align-items:center;gap:.4rem}
+p{color:var(--g);margin-bottom:.9rem;font-size:.95rem}
+.lead{font-size:1.05rem;color:var(--n);margin-bottom:1.5rem}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:.8rem;margin:1rem 0 1.5rem}
+.step{display:flex;align-items:flex-start;gap:1rem;background:var(--w);border-radius:var(--r);padding:1rem 1.2rem;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.step-num{background:var(--v);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;margin-top:.1rem}
+.step-body{flex:1}
+.step-title{font-weight:700;font-size:.95rem;margin-bottom:.25rem;color:var(--n)}
+.step-desc{font-size:.88rem;color:var(--g);line-height:1.55}
+.step-desc code{background:#f0f4f1;padding:.1rem .4rem;border-radius:4px;font-size:.83rem;color:var(--vd)}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;margin:1rem 0 1.5rem}
+.card{background:var(--w);border-radius:var(--r);padding:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:3px solid var(--v)}
+.card.warn{border-color:var(--warn)}
+.card.info{border-color:var(--info)}
+.card.danger{border-color:var(--danger)}
+.card-icon{font-size:1.8rem;margin-bottom:.5rem}
+.card-title{font-weight:700;font-size:.95rem;margin-bottom:.35rem}
+.card-desc{font-size:.84rem;color:var(--g);line-height:1.5}
+
+/* ALERTS */
+.alert{border-radius:var(--r);padding:.9rem 1.2rem;margin:1rem 0;font-size:.88rem;display:flex;align-items:flex-start;gap:.65rem;line-height:1.55}
+.alert-tip{background:#e8f5eb;border-left:4px solid var(--v);color:#1a4d22}
+.alert-warn{background:#fef9c3;border-left:4px solid var(--warn);color:#713f12}
+.alert-info{background:#dbeafe;border-left:4px solid var(--info);color:#1e3a5f}
+.alert-danger{background:#fee2e2;border-left:4px solid var(--danger);color:#7f1d1d}
+
+/* FLOW */
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:.4rem;margin:1rem 0 1.5rem;padding:1rem 1.2rem;background:var(--w);border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.flow-step{background:var(--vl);color:var(--vd);padding:.4rem .9rem;border-radius:50px;font-size:.82rem;font-weight:700;white-space:nowrap}
+.flow-arrow{color:#ccc;font-size:1.1rem}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;background:var(--w);border-radius:var(--r);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.tbl th{background:var(--gl);padding:.7rem 1rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g);text-align:left;border-bottom:2px solid #e8e8e8}
+.tbl td{padding:.7rem 1rem;font-size:.88rem;border-bottom:1px solid #f5f5f5;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#fafff9}
+
+/* BADGE */
+.badge{display:inline-block;padding:.18rem .6rem;border-radius:50px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.b-green{background:#dcfce7;color:#15803d}
+.b-yellow{background:#fef9c3;color:#a16207}
+.b-blue{background:#dbeafe;color:#1d4ed8}
+.b-red{background:#fee2e2;color:#dc2626}
+
+/* FAQ */
+.faq-item{border:1px solid #e8e8e8;border-radius:var(--r);overflow:hidden;margin-bottom:.6rem}
+.faq-q{padding:.9rem 1.2rem;font-weight:600;font-size:.92rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--w);transition:background .15s}
+.faq-q:hover{background:#fafff9}
+.faq-q .arr{color:var(--v);font-size:.8rem;transition:transform .2s}
+.faq-q.open .arr{transform:rotate(180deg)}
+.faq-a{display:none;padding:.9rem 1.2rem;font-size:.88rem;color:var(--g);background:#fafff9;border-top:1px solid #f0f0f0;line-height:1.6}
+.faq-a.open{display:block}
+
+/* SCREENSHOT PLACEHOLDER */
+.screen{background:linear-gradient(135deg,#e8f0e9,#d0e8d4);border-radius:var(--r);padding:2rem;text-align:center;margin:1rem 0;color:#5a8a5a;font-size:.85rem;border:2px dashed #b8d8bc}
+
+/* DIVIDER */
+.divider{border:none;border-top:1px solid #f0f0f0;margin:2rem 0}
+
+/* KEYBOARD */
+kbd{background:#f0f0f0;border:1px solid #ccc;border-radius:4px;padding:.1rem .4rem;font-size:.8rem;font-family:monospace}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .cards{grid-template-columns:1fr}
+  .flow{flex-direction:column;align-items:flex-start}
+  .flow-arrow{transform:rotate(90deg)}
+  .main{padding:1.2rem 1rem 3rem}
+}
+
+/* PRINT */
+@media print{
+  .toc,.site-header button{display:none}
+  .doc-section{display:block !important}
+  .doc-section+.doc-section{page-break-before:always}
+}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="logo">Punto<span>Ar</span> Obras Civiles</div>
+  <h1>Manual de Usuario — Panel Administrativo</h1>
+  <p>Guía completa de uso · Versión 3.0 · Mayo 2026</p>
+</div>
+
+<nav class="toc">
+  <div class="toc-inner">
+    <button class="toc-item active" onclick="showSection('inicio',this)">🏠 Inicio</button>
+    <button class="toc-item" onclick="showSection('flujo',this)">🔄 Flujo de trabajo</button>
+    <button class="toc-item" onclick="showSection('propietarios',this)">👤 Propietarios</button>
+    <button class="toc-item" onclick="showSection('propiedades',this)">🏠 Propiedades</button>
+    <button class="toc-item" onclick="showSection('inquilinos',this)">🔑 Inquilinos</button>
+    <button class="toc-item" onclick="showSection('contratos',this)">📄 Contratos</button>
+    <button class="toc-item" onclick="showSection('pagos',this)">💰 Pagos</button>
+    <button class="toc-item" onclick="showSection('ipc',this)">📈 IPC</button>
+    <button class="toc-item" onclick="showSection('checklist',this)">✅ Checklist</button>
+    <button class="toc-item" onclick="showSection('faq',this)">❓ FAQ</button>
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- ══ INICIO ══ -->
+<div id="sec-inicio" class="doc-section active">
+  <h2><span class="icon">🏠</span> Bienvenido al Panel Admin</h2>
+  <p class="lead">El panel administrativo de PuntoAr te permite gestionar de forma completa todas tus propiedades en alquiler: desde publicar un departamento hasta generar la factura mensual del inquilino.</p>
+
+  <h3>¿Qué podés hacer?</h3>
+  <div class="cards">
+    <div class="card"><div class="card-icon">👤</div><div class="card-title">Propietarios</div><div class="card-desc">Registrá los dueños de cada propiedad con sus datos bancarios para generar facturas automáticamente.</div></div>
+    <div class="card"><div class="card-icon">🏠</div><div class="card-title">Propiedades</div><div class="card-desc">Publicá departamentos, casas, locales y terrenos con fotos, videos, precios y condiciones.</div></div>
+    <div class="card"><div class="card-icon">🔑</div><div class="card-title">Inquilinos</div><div class="card-desc">Registrá a quién alquila cada propiedad junto con sus garantes.</div></div>
+    <div class="card"><div class="card-icon">📄</div><div class="card-title">Contratos</div><div class="card-desc">Gestioná contratos con fechas, valores y subí el PDF escaneado del contrato firmado.</div></div>
+    <div class="card"><div class="card-icon">💰</div><div class="card-title">Pagos</div><div class="card-desc">Registrá los pagos mensuales (alquiler + agua + tasa + extra) y generá facturas en PDF.</div></div>
+    <div class="card"><div class="card-icon">📈</div><div class="card-title">IPC</div><div class="card-desc">Cargá el índice trimestral y actualizá todos los contratos con un solo clic.</div></div>
+    <div class="card"><div class="card-icon">✅</div><div class="card-title">Checklist</div><div class="card-desc">Completá el estado del inmueble al entregar las llaves y generá el PDF para firmar.</div></div>
+    <div class="card"><div class="card-icon">📊</div><div class="card-title">Dashboard</div><div class="card-desc">Resumen de todo: pagos pendientes, contratos por vencer y estado de tus propiedades.</div></div>
+  </div>
+
+  <h3>Cómo acceder</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Levantá el servidor</div><div class="step-desc">En la terminal de VS Code ejecutá <code>npm start</code>. El servidor queda corriendo en <code>http://localhost:8080</code></div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Abrí el admin</div><div class="step-desc">En el navegador andá a <code>http://localhost:8080/admin/</code></div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Ingresá con tu usuario</div><div class="step-desc">Usá el email y contraseña que configuraste en Firebase Authentication.</div></div></div>
+  </div>
+
+  <div class="alert alert-tip">💡 <strong>Tip:</strong> Para acceder desde otro dispositivo (celular, otra PC) en la misma red WiFi, en la terminal vas a ver la dirección <strong>Network</strong>. Usá esa IP en el celular.</div>
+</div>
+
+<!-- ══ FLUJO ══ -->
+<div id="sec-flujo" class="doc-section">
+  <h2><span class="icon">🔄</span> Flujo de trabajo completo</h2>
+  <p class="lead">Este es el orden recomendado para cargar una propiedad nueva hasta tener todo en funcionamiento.</p>
+
+  <div class="flow">
+    <span class="flow-step">1. Propietario</span><span class="flow-arrow">→</span>
+    <span class="flow-step">2. Propiedad</span><span class="flow-arrow">→</span>
+    <span class="flow-step">3. Inquilino</span><span class="flow-arrow">→</span>
+    <span class="flow-step">4. Contrato</span><span class="flow-arrow">→</span>
+    <span class="flow-step">5. Checklist</span><span class="flow-arrow">→</span>
+    <span class="flow-step">6. Pagos mensuales</span><span class="flow-arrow">→</span>
+    <span class="flow-step">7. IPC cada 3 meses</span>
+  </div>
+
+  <table class="tbl">
+    <thead><tr><th>#</th><th>Paso</th><th>Cuándo hacerlo</th><th>Resultado</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td>🏠 Crear propietario</td><td>Una sola vez por dueño</td><td>Los datos bancarios quedan guardados para las facturas</td></tr>
+      <tr><td><strong>2</strong></td><td>🏠 Crear propiedad</td><td>Cuando tenés algo para alquilar</td><td>La propiedad aparece en la web pública como "Disponible"</td></tr>
+      <tr><td><strong>3</strong></td><td>🔑 Crear inquilino</td><td>Cuando encontrás un candidato</td><td>Quedan guardados los datos del inquilino y sus garantes</td></tr>
+      <tr><td><strong>4</strong></td><td>📄 Crear contrato</td><td>Al firmar el contrato</td><td>La propiedad pasa a "Alquilado" automáticamente</td></tr>
+      <tr><td><strong>5</strong></td><td>✅ Hacer checklist</td><td>Al entregar las llaves</td><td>PDF firmado con el estado del inmueble</td></tr>
+      <tr><td><strong>6</strong></td><td>💰 Generar pagos del mes</td><td>Al inicio de cada mes</td><td>Se crean automáticamente todos los pagos pendientes</td></tr>
+      <tr><td><strong>7</strong></td><td>📈 Actualizar IPC</td><td>Cada 3 meses</td><td>Los alquileres se actualizan según el índice del INDEC</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-info">ℹ️ <strong>No es obligatorio seguir este orden exacto</strong>, pero es el que da mejores resultados. Por ejemplo, podés cargar propiedades sin asignar propietario, y asignárselo después.</div>
+
+  <hr class="divider"/>
+
+  <h3>Estados de una propiedad</h3>
+  <div class="cards">
+    <div class="card"><div class="card-icon">🟢</div><div class="card-title"><span class="badge b-green">Disponible</span></div><div class="card-desc">La propiedad está publicada en la web y lista para alquilar.</div></div>
+    <div class="card warn"><div class="card-icon">🟡</div><div class="card-title"><span class="badge b-yellow">Reservado</span></div><div class="card-desc">Hay un interesado pero todavía no firmó el contrato. No aparece disponible en la web.</div></div>
+    <div class="card info"><div class="card-icon">🔵</div><div class="card-title"><span class="badge b-blue">Alquilado</span></div><div class="card-desc">Tiene un contrato activo. Se cambia automáticamente al crear el contrato.</div></div>
+  </div>
+  <div class="alert alert-tip">💡 Podés cambiar el estado rápido con el botón 🔄 en la tabla de propiedades, sin abrir el formulario.</div>
+</div>
+
+<!-- ══ PROPIETARIOS ══ -->
+<div id="sec-propietarios" class="doc-section">
+  <h2><span class="icon">👤</span> Propietarios</h2>
+  <p class="lead">Un propietario es el dueño de una o más propiedades. Sus datos bancarios se usan automáticamente cuando generás una factura mensual para el inquilino.</p>
+
+  <h3>¿Cuándo crear un propietario?</h3>
+  <p>Antes de crear una propiedad. Si tenés varios departamentos del mismo dueño, lo cargás una sola vez y lo asignás a cada propiedad.</p>
+
+  <h3>Cómo crear un propietario</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ir a Propietarios en el sidebar</div><div class="step-desc">Clic en 👤 Propietarios en el menú izquierdo.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Clic en "➕ Nuevo"</div><div class="step-desc">Se abre el formulario de propietario.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Completar datos personales</div><div class="step-desc">Nombre o razón social, CUIT/CUIL, condición IVA, teléfono, email y dirección.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Completar datos bancarios</div><div class="step-desc">CBU, alias, banco y número de cuenta. Estos datos van al pie de cada factura.</div></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Guardar</div><div class="step-desc">Clic en 💾 Guardar. El propietario ya queda disponible para asignar a propiedades.</div></div></div>
+  </div>
+
+  <h3>Datos necesarios</h3>
+  <table class="tbl">
+    <thead><tr><th>Campo</th><th>Obligatorio</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td>Nombre / Razón social</td><td><span class="badge b-red">Sí</span></td><td>Nombre de la persona o empresa. Ej: "Constructores Asociados S.A."</td></tr>
+      <tr><td>CUIT / CUIL</td><td>No</td><td>Formato: 30-12345678-9. Aparece en la factura.</td></tr>
+      <tr><td>Condición IVA</td><td>No</td><td>Responsable Inscripto, Monotributista, etc.</td></tr>
+      <tr><td>CBU</td><td>No</td><td>22 dígitos. Aparece en la factura para que el inquilino transfiera.</td></tr>
+      <tr><td>Alias</td><td>No</td><td>Alias bancario. Ej: BOLDO.CALCO.PARED</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-warn">⚠️ <strong>Importante:</strong> Si el propietario no tiene datos bancarios cargados, la factura mensual del inquilino no va a mostrar a dónde transferir. Completar CBU y alias antes de generar facturas.</div>
+</div>
+
+<!-- ══ PROPIEDADES ══ -->
+<div id="sec-propiedades" class="doc-section">
+  <h2><span class="icon">🏠</span> Propiedades</h2>
+  <p class="lead">Una propiedad es el inmueble que vas a alquilar. Al crearla, aparece en la web pública para que los interesados la vean.</p>
+
+  <h3>Cómo crear una propiedad</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ir a Propiedades → ➕ Nueva</div><div class="step-desc">Se abre el formulario con pestañas.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Pestaña "Información"</div><div class="step-desc">Completá el título, tipo (Departamento/Casa/Local/Terreno), estado inicial y propietario. Marcá ⭐ si querés que aparezca destacada en la web.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Pestaña "Ubicación"</div><div class="step-desc">Dirección completa, barrio y ciudad.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Pestaña "Características"</div><div class="step-desc">Superficie, ambientes, dormitorios, baños. También el precio de alquiler mensual y los gastos de contrato.</div></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Pestaña "Fotos / Videos"</div><div class="step-desc">Hacé clic en el área punteada para subir fotos (JPG/PNG) y videos (MP4/MOV). Se suben a Cloudinary automáticamente. Podés subir varios archivos a la vez.</div></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Pestaña "Condiciones"</div><div class="step-desc">Agregá las condiciones del alquiler (ej: "No se cobra depósito") y los requisitos (ej: "Recibo de sueldo mayor a $X"). Cada ítem se agrega con el botón +.</div></div></div>
+    <div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-title">Guardar</div><div class="step-desc">Clic en 💾 Guardar. La propiedad aparece en la web pública en segundos.</div></div></div>
+  </div>
+
+  <div class="alert alert-tip">💡 <strong>Las fotos tardan más en guardarse</strong> porque se suben a Cloudinary. El botón "Guardar" dice "⏳ Guardando…" mientras procesa. No cierres el formulario hasta que vuelva a decir "💾 Guardar".</div>
+
+  <h3>Acciones rápidas en la tabla</h3>
+  <table class="tbl">
+    <thead><tr><th>Botón</th><th>Qué hace</th></tr></thead>
+    <tbody>
+      <tr><td>✏️</td><td>Editar todos los datos de la propiedad</td></tr>
+      <tr><td>🔄</td><td>Cambiar el estado (Disponible → Reservado → Alquilado → Disponible)</td></tr>
+      <tr><td>🗑</td><td>Eliminar la propiedad (pide confirmación)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══ INQUILINOS ══ -->
+<div id="sec-inquilinos" class="doc-section">
+  <h2><span class="icon">🔑</span> Inquilinos</h2>
+  <p class="lead">Un inquilino es la persona que va a alquilar una propiedad. Se registran sus datos personales y los de hasta 2 garantes.</p>
+
+  <h3>Cuándo crear un inquilino</h3>
+  <p>Cuando tenés un candidato aprobado y listo para firmar. Podés crearlo antes del contrato, o al mismo tiempo.</p>
+
+  <h3>Cómo crear un inquilino</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ir a Inquilinos → ➕ Nuevo</div><div class="step-desc">Se abre el formulario.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Seleccionar la propiedad a alquilar</div><div class="step-desc">En el primer campo elegís qué propiedad va a alquilar este inquilino.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Datos del inquilino</div><div class="step-desc">Nombre completo (obligatorio), DNI, teléfono, email, ocupación/empleador, sueldo aproximado y dirección actual.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Datos del Garante 1</div><div class="step-desc">Nombre, DNI, teléfono y sueldo del primer garante.</div></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Garante 2 (opcional)</div><div class="step-desc">Si tiene un segundo garante, completá sus datos también.</div></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Guardar</div><div class="step-desc">Clic en 💾 Guardar.</div></div></div>
+  </div>
+
+  <div class="alert alert-info">ℹ️ En la tabla de inquilinos podés ver si ya tiene un contrato activo o no. Si dice "Sin contrato" es porque todavía no se le asignó ningún contrato.</div>
+</div>
+
+<!-- ══ CONTRATOS ══ -->
+<div id="sec-contratos" class="doc-section">
+  <h2><span class="icon">📄</span> Contratos</h2>
+  <p class="lead">Un contrato vincula una propiedad con un inquilino. Al crearlo, la propiedad pasa automáticamente al estado "Alquilado".</p>
+
+  <h3>Cómo crear un contrato</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ir a Contratos → ➕ Nuevo</div><div class="step-desc">Se abre el formulario. Los selects de propiedad e inquilino se cargan con todos los registros existentes.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Seleccionar propiedad e inquilino</div><div class="step-desc">Elegí la propiedad y el inquilino de los desplegables.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Fechas del contrato</div><div class="step-desc">Fecha de inicio y fecha de fin del contrato.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Valores</div><div class="step-desc"><strong>Valor inicial:</strong> el precio al firmar. <strong>Alquiler actual:</strong> el precio que paga hoy (puede ser diferente si ya hubo actualizaciones).</div></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Período de actualización y próxima fecha</div><div class="step-desc">Elegí cada cuántos meses se actualiza (generalmente 3) y la fecha de la próxima actualización. Esto lo usa el módulo de IPC.</div></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Cuentas de servicios</div><div class="step-desc">Número de cuenta de Ecogas y Cooperativa Eléctrica. Aparecen en la factura mensual.</div></div></div>
+    <div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-title">Subir el PDF del contrato (opcional)</div><div class="step-desc">Si tenés el contrato escaneado, hacé clic en el área punteada y subí el PDF. Queda guardado en Cloudinary y lo podés ver desde el botón 📄 PDF en la tabla.</div></div></div>
+    <div class="step"><div class="step-num">8</div><div class="step-body"><div class="step-title">Guardar</div><div class="step-desc">Clic en 💾 Guardar contrato. La propiedad cambia automáticamente a "Alquilado".</div></div></div>
+  </div>
+
+  <h3>Acciones en la tabla de contratos</h3>
+  <table class="tbl">
+    <thead><tr><th>Botón</th><th>Qué hace</th></tr></thead>
+    <tbody>
+      <tr><td>✏️</td><td>Editar el contrato</td></tr>
+      <tr><td>📄 PDF</td><td>Ver el contrato escaneado (solo aparece si subiste uno)</td></tr>
+      <tr><td>🧾</td><td>Generar la factura mensual del inquilino en PDF</td></tr>
+      <tr><td>🗑</td><td>Eliminar el contrato</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-warn">⚠️ <strong>Campo "Próxima actualización":</strong> Es la fecha en que el sistema va a avisarte que hay que aplicar el IPC. Si dejás este campo vacío, el módulo de IPC no va a detectar este contrato para actualizar.</div>
+</div>
+
+<!-- ══ PAGOS ══ -->
+<div id="sec-pagos" class="doc-section">
+  <h2><span class="icon">💰</span> Pagos mensuales</h2>
+  <p class="lead">Cada mes, para cada contrato activo, se genera un pago con el detalle de alquiler, agua, tasa municipal y extras.</p>
+
+  <h3>Generar los pagos del mes (forma automática)</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ir a 💰 Pagos</div><div class="step-desc">En el sidebar, clic en Pagos.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Clic en "⚡ Generar mes actual"</div><div class="step-desc">El sistema crea automáticamente un pago en estado "Pendiente" para cada contrato activo. Solo crea los que no existen — si los pagos del mes ya están, no los duplica.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Completar los montos variables</div><div class="step-desc">El alquiler se completa automáticamente. Editá cada pago con ✏️ para agregar el valor de agua, tasa y extras de ese mes.</div></div></div>
+  </div>
+
+  <h3>Registrar que un pago fue cobrado</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Encontrá el pago pendiente</div><div class="step-desc">Podés filtrar por estado "Pendiente" para verlos más rápido.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Clic en "✅ Pagado"</div><div class="step-desc">El pago pasa a "Pagado" con la fecha de hoy como fecha de pago.</div></div></div>
+  </div>
+
+  <h3>Generar la factura mensual</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Clic en el botón 🧾 del pago</div><div class="step-desc">Se abre la vista previa de la factura con todos los datos: propiedad, inquilino, desglose de importes y datos bancarios del propietario.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Clic en "🖨️ Imprimir / PDF"</div><div class="step-desc">Se abre el diálogo de impresión del navegador. Elegí "Guardar como PDF" para tener el archivo.</div></div></div>
+  </div>
+
+  <h3>Estados de un pago</h3>
+  <table class="tbl">
+    <thead><tr><th>Estado</th><th>Significado</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge b-yellow">Pendiente</span></td><td>El pago fue generado pero todavía no se cobró.</td></tr>
+      <tr><td><span class="badge b-green">Pagado</span></td><td>El inquilino pagó. Tiene fecha de pago registrada.</td></tr>
+      <tr><td><span class="badge b-red">Vencido</span></td><td>El pago no se cobró en la fecha de vencimiento.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-tip">💡 <strong>El Dashboard te avisa</strong> cuántos pagos están pendientes en la tarjeta "Pagos pendientes". Es lo primero que ves al entrar al admin.</div>
+</div>
+
+<!-- ══ IPC ══ -->
+<div id="sec-ipc" class="doc-section">
+  <h2><span class="icon">📈</span> IPC — Actualización de alquileres</h2>
+  <p class="lead">Cada 3 meses, los alquileres se actualizan según el Índice de Precios al Consumidor (IPC) publicado por el INDEC. Este módulo te permite hacer esa actualización de forma sencilla.</p>
+
+  <div class="alert alert-info">ℹ️ <strong>¿Qué es el IPC?</strong> Es el índice que mide cuánto subieron los precios en Argentina. El INDEC lo publica todos los meses. Para los contratos de alquiler se usa la variación acumulada del trimestre (3 meses).</div>
+
+  <h3>Paso a paso: cómo actualizar los alquileres</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Consultar el IPC en el INDEC</div><div class="step-desc">Andá a <code>indec.gob.ar</code> y buscá el IPC del último trimestre. El dato que necesitás es la <strong>variación % acumulada en 3 meses</strong>. Ej: si en marzo fue +3%, en abril +2.5% y en mayo +3%, la variación acumulada es aproximadamente +8.5%.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Ir a 📈 IPC en el admin</div><div class="step-desc">En el sidebar, clic en IPC / Índices.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Completar el formulario</div><div class="step-desc"><strong>Período:</strong> escribí qué meses cubre, ej: "Mar–May 2026". <strong>Variación %:</strong> ingresá el número, ej: 8.5 (sin el signo %).</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Clic en "💾 Guardar IPC"</div><div class="step-desc">El índice queda registrado en el historial.</div></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Ver contratos a actualizar</div><div class="step-desc">En el panel de la derecha aparecen todos los contratos cuya fecha de actualización ya llegó. Muestra el valor actual y el nuevo valor calculado.</div></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Aplicar la actualización</div><div class="step-desc">Podés aplicar uno por uno con el botón "Aplicar", o todos juntos con "⚡ Aplicar a todos".</div></div></div>
+  </div>
+
+  <h3>Ejemplo práctico</h3>
+  <table class="tbl">
+    <thead><tr><th>Dato</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Alquiler actual</td><td>$740.000</td></tr>
+      <tr><td>Variación IPC del trimestre</td><td>+8.5%</td></tr>
+      <tr><td>Nuevo alquiler calculado</td><td>$740.000 × 1.085 = <strong>$802.900</strong></td></tr>
+      <tr><td>Próxima actualización</td><td>Se mueve automáticamente 3 meses hacia adelante</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-warn">⚠️ <strong>Recordá actualizar la "Próxima actualización" en el contrato.</strong> Si cuando creaste el contrato pusiste una fecha de próxima actualización, el sistema la avanza automáticamente al aplicar el IPC. Verificá que sea correcta.</div>
+
+  <h3>¿Dónde consultar el IPC oficial?</h3>
+  <p>El botón "📊 Ver IPC en INDEC →" dentro del módulo te lleva directamente a la página oficial del INDEC con los datos más recientes.</p>
+</div>
+
+<!-- ══ CHECKLIST ══ -->
+<div id="sec-checklist" class="doc-section">
+  <h2><span class="icon">✅</span> Checklist de entrega</h2>
+  <p class="lead">Al entregar las llaves, se completa un relevamiento del estado del inmueble. Esto protege tanto al propietario como al inquilino, dejando constancia por escrito.</p>
+
+  <h3>Cuándo hacerlo</h3>
+  <div class="cards">
+    <div class="card"><div class="card-icon">🔑</div><div class="card-title">Entrega de llaves</div><div class="card-desc">Al inicio del contrato, cuando el inquilino recibe las llaves. Documenta el estado inicial.</div></div>
+    <div class="card warn"><div class="card-icon">🔓</div><div class="card-title">Devolución</div><div class="card-desc">Al finalizar el contrato, cuando el inquilino devuelve las llaves. Se compara con el estado inicial.</div></div>
+  </div>
+
+  <h3>Cómo completar el checklist</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ir a ✅ Checklists → ➕ Nuevo</div><div class="step-desc">Se abre el formulario.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Seleccionar propiedad</div><div class="step-desc">Al elegir la propiedad, se autocompleta la dirección y el inquilino del contrato activo.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Completar fecha y tipo</div><div class="step-desc">Elegí si es "Entrega de llaves" o "Devolución".</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Recorrer los ítems</div><div class="step-desc">Para cada ítem marcá <strong>SI</strong> o <strong>NO</strong>. Si hay algo para aclarar, escribí en el campo de comentarios de ese ítem.</div></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Vista previa e impresión</div><div class="step-desc">Clic en "👁 Preview PDF" para ver cómo queda el documento. Se abre en una nueva pestaña listo para imprimir o guardar como PDF.</div></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Firmar y guardar</div><div class="step-desc">Imprimí dos copias: una para el inquilino y otra para el archivo. Después guardá el checklist con 💾 Guardar.</div></div></div>
+  </div>
+
+  <h3>Secciones del checklist</h3>
+  <table class="tbl">
+    <thead><tr><th>Sección</th><th>Qué incluye</th></tr></thead>
+    <tbody>
+      <tr><td>⚡ Servicios</td><td>Luz y gas activos</td></tr>
+      <tr><td>🚰 Sanitarios</td><td>Cocina, lavadero: bachas, grifería, sifones</td></tr>
+      <tr><td>🛁 Baño</td><td>Inodoro, bidet, lavatorio, ducha, espejo, accesorios</td></tr>
+      <tr><td>🔥 Gas</td><td>Termotanque, calefactor, pérdida de gas</td></tr>
+      <tr><td>💡 Electricidad</td><td>Luminarias, enchufes, tablero</td></tr>
+      <tr><td>🚪 Puertas y ventanas</td><td>Estado, bisagras, cerraduras, vidrios</td></tr>
+      <tr><td>🪑 Muebles</td><td>Cocina, placares, cajones, alacenas</td></tr>
+      <tr><td>🎨 Pintura y pisos</td><td>Paredes, cielorrasos, cerámicos, zócalos</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-tip">💡 En el PDF impreso, los ítems marcados como <strong>SI</strong> muestran un ✓ en verde y los <strong>NO</strong> muestran un ✗ en rojo. Los comentarios aparecen en la columna de la derecha.</div>
+</div>
+
+<!-- ══ FAQ ══ -->
+<div id="sec-faq" class="doc-section">
+  <h2><span class="icon">❓</span> Preguntas frecuentes</h2>
+  <p class="lead">Respuestas a las dudas más comunes.</p>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">¿Por qué no aparecen las propiedades en la web pública? <span class="arr">▼</span></div>
+    <div class="faq-a">La web pública lee los datos de Firebase en tiempo real. Si las propiedades están en el admin, deberían aparecer en la web. Verificá que el archivo <code>firebase-config.js</code> tenga las credenciales correctas en ambos lados (admin y public).</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">¿Puedo editar una propiedad que ya está alquilada? <span class="arr">▼</span></div>
+    <div class="faq-a">Sí. Podés editar fotos, descripción y condiciones sin problema. El estado y el precio del contrato se manejan desde el módulo de Contratos.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">¿Qué pasa si el inquilino paga fuera de fecha? <span class="arr">▼</span></div>
+    <div class="faq-a">Editá el pago con ✏️ y cambiá el estado a "Pagado" manualmente. También podés editar la fecha de pago para registrar cuándo pagó realmente.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">¿Cómo sé qué contratos hay que actualizar por IPC? <span class="arr">▼</span></div>
+    <div class="faq-a">En el módulo 📈 IPC, el panel "Contratos a actualizar" muestra automáticamente todos los contratos cuya fecha de próxima actualización ya pasó. Si no aparece ninguno es porque la fecha de próxima actualización no llegó todavía, o porque no se cargó esa fecha al crear el contrato.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">¿Se pueden perder los datos si se cierra el navegador? <span class="arr">▼</span></div>
+    <div class="faq-a">No. Todos los datos se guardan en Firebase (la nube de Google) en el momento en que hacés clic en "Guardar". El navegador no guarda nada localmente — todo está en la nube y podés acceder desde cualquier dispositivo.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">¿Cómo accedo al admin desde el celular? <span class="arr">▼</span></div>
+    <div class="faq-a">Con el servidor corriendo (<code>npm start</code>), en la terminal vas a ver una dirección "Network" como <code>http://192.168.1.X:8080</code>. Desde el celular conectado a la misma WiFi, abrí esa URL en el navegador y andá a <code>/admin/</code>.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">¿Qué hago si una foto no se sube? <span class="arr">▼</span></div>
+    <div class="faq-a">Verificá que en tu cuenta de Cloudinary el Upload Preset "puntoar_uploads" esté en modo <strong>Unsigned</strong>. También verificá que el <code>cloud_name</code> en el admin coincida con tu cuenta de Cloudinary. Para videos, el "Resource type" del preset debe estar en "Auto".</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">¿Puedo tener el admin abierto en varias pestañas? <span class="arr">▼</span></div>
+    <div class="faq-a">Sí. Los datos se sincronizan en tiempo real gracias a Firebase. Si cargás una propiedad en una pestaña, aparece al instante en las otras.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">¿Cómo cambio la contraseña del admin? <span class="arr">▼</span></div>
+    <div class="faq-a">En el sidebar del admin, al fondo, hay un botón 🔑 Contraseña. También podés cambiarlo directamente desde Firebase Console → Authentication → Users → editar tu usuario.</div>
+  </div>
+
+</div>
+
+</div><!-- /main -->
+
+<script>
+function showSection(id, btn) {
+  document.querySelectorAll('.doc-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelectorAll('.toc-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function toggleFaq(el) {
+  const ans = el.nextElementSibling;
+  const isOpen = ans.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+  document.querySelectorAll('.faq-q').forEach(q => q.classList.remove('open'));
+  if (!isOpen) {
+    ans.classList.add('open');
+    el.classList.add('open');
+  }
+}
+</script>
+</body>
+</html>

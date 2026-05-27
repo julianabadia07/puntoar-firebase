@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>PuntoAr · Cargar datos de ejemplo</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f0f4f1;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem}
+    .box{background:#fff;border-radius:16px;padding:2.5rem;max-width:480px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.1);text-align:center}
+    .logo{font-family:Georgia,serif;font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
+    .logo span{color:#4aaa5a}
+    p{color:#666;font-size:.92rem;margin-bottom:1.8rem;line-height:1.6}
+    .btn{width:100%;padding:.85rem;background:#4aaa5a;color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+    .btn:hover{background:#358944}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .log{margin-top:1.5rem;text-align:left;display:none}
+    .log-item{display:flex;align-items:center;gap:.6rem;padding:.5rem .75rem;border-radius:8px;font-size:.85rem;margin-bottom:.4rem;background:#f4f5f4}
+    .log-item.ok{background:#e8f5eb;color:#2d6a35}
+    .log-item.err{background:#fee2e2;color:#dc2626}
+    .log-item.info{background:#e8f0fb;color:#1a56db}
+    .done{display:none;margin-top:1.2rem;padding:1rem;background:#e8f5eb;border-radius:10px;color:#2d6a35;font-weight:600;font-size:.95rem}
+    .done a{color:#358944;text-decoration:underline}
+    .spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+    @keyframes sp{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">Punto<span>Ar</span></div>
+  <p style="margin-top:.3rem;margin-bottom:1.5rem;font-size:.8rem;color:#888;text-transform:uppercase;letter-spacing:.08em">Cargador de datos de ejemplo</p>
+  <p>Esto va a crear datos de ejemplo completos: <strong>4 propietarios, 6 propiedades, 3 inquilinos, 3 contratos, 9 pagos, índices IPC y 1 checklist</strong>.</p>
+  <div id="loginForm" style="margin-bottom:1.2rem">
+  <div style="display:flex;flex-direction:column;gap:.7rem">
+    <div>
+      <label style="font-size:.72rem;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:.3rem">Email admin</label>
+      <input type="email" id="seedEmail" placeholder="admin@puntoar.com" style="width:100%;padding:.6rem .85rem;border:1.5px solid #dde;border-radius:8px;font-size:.9rem;font-family:inherit;outline:none"/>
+    </div>
+    <div>
+      <label style="font-size:.72rem;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:.3rem">Contraseña</label>
+      <input type="password" id="seedPass" placeholder="••••••••" style="width:100%;padding:.6rem .85rem;border:1.5px solid #dde;border-radius:8px;font-size:.9rem;font-family:inherit;outline:none" onkeydown="if(event.key==='Enter')document.getElementById('btnSeed').click()"/>
+    </div>
+  </div>
+  <div id="loginErr" style="color:#dc2626;font-size:.82rem;margin-top:.5rem;display:none"></div>
+</div>
+<button class="btn" id="btnSeed" onclick="seed()">
+    <span id="btnTxt">🚀 Cargar propiedades de ejemplo</span>
+    <div class="spin" id="spin" style="display:none"></div>
+  </button>
+  <div class="log" id="log"></div>
+  <div class="done" id="done">
+    ✅ ¡Listo! <a href="../public/index.html">Ver web pública</a> · <a href="../admin/index.html">Ir al admin</a>
+  </div>
+</div>
+
+<script src="../firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.firestore();
+
+const DEMO = [
+  {
+    titulo: 'Departamento Planta Alta – Centro',
+    tipo: 'Departamento',
+    estado: 'Disponible',
+    precio: 740000,
+    ambientes: 3, dormitorios: 2, banos: 1, superficieM2: 65,
+    direccion: 'San Martín 1250, Piso 2',
+    barrio: 'Centro', ciudad: 'Córdoba',
+    descripcion: 'Departamento luminoso en planta alta con disponibilidad inmediata. Luz y gas activos, no hay que hacer ningún trámite. Muy bien ubicado a pasos del centro.',
+    destacado: true,
+    condiciones: [
+      'Disponibilidad inmediata',
+      'Paga aparte agua e impuesto municipal',
+      'Actualización cada 3 meses por IPC',
+      'Contrato anual o 2 años a definir',
+      'No se cobra depósito',
+      'Firmas ante escribano a cargo del inquilino'
+    ],
+    requisitos: [
+      'Recibo de sueldo > $1.500.000 con antigüedad > 18 meses',
+      'Garantes con recibo > $1.500.000 residentes en Pcia. de Cba.',
+      'Pedido de informes $30.000 c/u'
+    ],
+    gastos: { contrato1anio: 444000, contrato2anios: 888000, informes: 30000, deposito: 0 },
+    imagenes: [],
+    fechaAlta: new Date('2026-05-01').toISOString()
+  },
+  {
+    titulo: 'Casa con Jardín y Quincho – Argüello',
+    tipo: 'Casa',
+    estado: 'Disponible',
+    precio: 1200000,
+    ambientes: 5, dormitorios: 3, banos: 2, superficieM2: 145,
+    direccion: 'Av. Vélez Sarsfield 4500',
+    barrio: 'Argüello', ciudad: 'Córdoba',
+    descripcion: 'Casa amplia con jardín, garage para 2 autos y quincho cubierto. Zona tranquila y arbolada, ideal para familia. Todos los servicios incluidos.',
+    destacado: false,
+    condiciones: [
+      'Contrato anual mínimo',
+      'Actualización por IPC cada 3 meses',
+      'Expensas a cargo del inquilino'
+    ],
+    requisitos: [
+      'Recibo de sueldo > $2.500.000',
+      'Garantes con recibo similar residentes en Cba.',
+      'Pedido de informes $30.000 c/u'
+    ],
+    gastos: { contrato1anio: 720000, contrato2anios: 1440000, informes: 30000, deposito: 0 },
+    imagenes: [],
+    fechaAlta: new Date('2026-04-15').toISOString()
+  },
+  {
+    titulo: 'Local Comercial a Estrenar – Nueva Córdoba',
+    tipo: 'Local comercial',
+    estado: 'Disponible',
+    precio: 980000,
+    ambientes: 1, dormitorios: 0, banos: 1, superficieM2: 48,
+    direccion: 'Av. Hipólito Yrigoyen 520',
+    barrio: 'Nueva Córdoba', ciudad: 'Córdoba',
+    descripcion: 'Local a estrenar sobre avenida principal. Vidriera de 5m, baño, depósito. Ideal para gastronómico, comercio o estudio profesional. Alta visibilidad.',
+    destacado: true,
+    condiciones: [
+      'Contrato 2 años mínimo',
+      'Actualización por IPC',
+      'Expensas a cargo del inquilino'
+    ],
+    requisitos: [
+      'Actividad comercial habilitada',
+      'Garantía real o seguro de caución',
+      'Pedido de informes $30.000 c/u'
+    ],
+    gastos: { contrato1anio: 0, contrato2anios: 1176000, informes: 30000, deposito: 0 },
+    imagenes: [],
+    fechaAlta: new Date('2026-05-10').toISOString()
+  },
+  {
+    titulo: 'Departamento 1 Dormitorio – General Paz',
+    tipo: 'Departamento',
+    estado: 'Disponible',
+    precio: 520000,
+    ambientes: 2, dormitorios: 1, banos: 1, superficieM2: 42,
+    direccion: 'Bv. General Paz 1860, Piso 3',
+    barrio: 'General Paz', ciudad: 'Córdoba',
+    descripcion: 'Departamento cómodo ideal para pareja o persona sola. Piso 3 con buena vista, luminoso y ventilado. A metros de comercios y transporte.',
+    destacado: false,
+    condiciones: [
+      'Disponibilidad inmediata',
+      'Actualización por IPC cada 3 meses',
+      'No se cobra depósito'
+    ],
+    requisitos: [
+      'Recibo de sueldo > $1.000.000 con antigüedad > 12 meses',
+      'Un garante con recibo similar',
+      'Pedido de informes $30.000 c/u'
+    ],
+    gastos: { contrato1anio: 312000, contrato2anios: 624000, informes: 30000, deposito: 0 },
+    imagenes: [],
+    fechaAlta: new Date('2026-05-15').toISOString()
+  },
+  {
+    titulo: 'Terreno Esquina – Malagueño',
+    tipo: 'Terreno',
+    estado: 'Disponible',
+    precio: 450000,
+    ambientes: 0, dormitorios: 0, banos: 0, superficieM2: 360,
+    direccion: 'Calle Los Aromos esq. Las Rosas',
+    barrio: 'Malagueño', ciudad: 'Córdoba',
+    descripcion: 'Terreno en esquina en barrio en crecimiento. Todos los servicios en la vereda. Ideal para depósito de materiales, empresa constructora o emprendimiento.',
+    destacado: false,
+    condiciones: [
+      'Alquiler largo plazo',
+      'Uso comercial o industrial',
+      'A convenir según actividad'
+    ],
+    requisitos: [
+      'Descripción de la actividad a desarrollar',
+      'Garantía a convenir',
+      'Pedido de informes $30.000 c/u'
+    ],
+    gastos: { contrato1anio: 270000, contrato2anios: 540000, informes: 30000, deposito: 0 },
+    imagenes: [],
+    fechaAlta: new Date('2026-03-20').toISOString()
+  },
+  {
+    titulo: 'Casa PH con Terraza – Alberdi',
+    tipo: 'Casa',
+    estado: 'Reservado',
+    precio: 890000,
+    ambientes: 4, dormitorios: 2, banos: 1, superficieM2: 95,
+    direccion: 'Calle Laprida 785, PH',
+    barrio: 'Alberdi', ciudad: 'Córdoba',
+    descripcion: 'PH con terraza privada de 30m². Dos dormitorios, living amplio, cocina equipada. Barrio con mucha vida y excelente conectividad.',
+    destacado: false,
+    condiciones: [
+      'Contrato anual',
+      'Actualización por IPC',
+      'Expensas incluidas'
+    ],
+    requisitos: [
+      'Recibo de sueldo > $1.800.000',
+      'Garantes con recibo similar',
+      'Pedido de informes $30.000 c/u'
+    ],
+    gastos: { contrato1anio: 534000, contrato2anios: 1068000, informes: 30000, deposito: 0 },
+    imagenes: [],
+    fechaAlta: new Date('2026-04-28').toISOString()
+  }
+];
+
+function log(msg, type='info') {
+  const d = document.getElementById('log');
+  d.style.display = 'block';
+  d.innerHTML += `<div class="log-item ${type}">${msg}</div>`;
+  d.scrollTop = d.scrollHeight;
+}
+
+const DEMO_OWNERS = [
+  { nombre:'Constructores Asociados S.A.', cuit:'30-61423150-1', iva:'Responsable Inscripto', telefono:'351 555-0001', email:'admin@constructoresasociados.com', direccion:'Defensa 450, Cba Capital', cbu:'0070138520000000889951', alias:'BOLDO.CALCO.PARED', banco:'Banco Galicia', cuenta:'889-9 138-5', notas:'Propietario principal', fechaAlta:new Date().toISOString() },
+  { nombre:'María Laura Fernández', cuit:'27-28456789-3', iva:'Monotributista', telefono:'351 555-0002', email:'mlaurafernandez@gmail.com', direccion:'Av. Colón 1200, Cba', cbu:'0170099220000001234567', alias:'MARIA.LAURA.PROP', banco:'Banco Nación', cuenta:'1234567-00', notas:'', fechaAlta:new Date().toISOString() },
+  { nombre:'Inversiones del Centro SRL', cuit:'30-70987654-2', iva:'Responsable Inscripto', telefono:'351 555-0003', email:'info@inversionesdelcentro.com', direccion:'San Martín 450, Cba Capital', cbu:'0140306301406020004421', alias:'INVER.CENTRO.SRL', banco:'Banco Macro', cuenta:'406020004421', notas:'Empresa con múltiples propiedades', fechaAlta:new Date().toISOString() },
+  { nombre:'Carlos Alberto Romero', cuit:'20-18765432-1', iva:'Consumidor Final', telefono:'351 555-0004', email:'caromero@hotmail.com', direccion:'Bv. Chacabuco 890, Cba', cbu:'0290099210000000987654', alias:'CARLOS.ROMERO.INM', banco:'Santander', cuenta:'987654-00', notas:'', fechaAlta:new Date().toISOString() }
+];
+
+const DEMO_INQUILINOS = [
+  { nombre:'Franco Panontini', dni:'32456789', telefono:'351 612-3456', email:'franco.panontini@gmail.com', ocupacion:'Empleado', sueldo:1800000, direccion:'Buchardo 883 PH8', notas:'Inquilino actual', garante1:{nombre:'Roberto Panontini', dni:'18234567', telefono:'351 498-7654', sueldo:2100000}, garante2:{nombre:'', dni:'', telefono:'', sueldo:0}, fechaAlta:new Date().toISOString() },
+  { nombre:'Valentina Gómez', dni:'40123456', telefono:'351 623-4567', email:'vgomez@gmail.com', ocupacion:'Docente', sueldo:1600000, direccion:'Av. Vélez 3200', notas:'', garante1:{nombre:'Sergio Gómez', dni:'15678901', telefono:'351 456-7890', sueldo:1700000}, garante2:{nombre:'', dni:'', telefono:'', sueldo:0}, fechaAlta:new Date().toISOString() },
+  { nombre:'Martín Rodríguez', dni:'35789012', telefono:'351 634-5678', email:'mrodriguez@outlook.com', ocupacion:'Contador', sueldo:2200000, direccion:'Bv. San Juan 900', notas:'', garante1:{nombre:'Ana Rodríguez', dni:'22345678', telefono:'351 567-8901', sueldo:1900000}, garante2:{nombre:'', dni:'', telefono:'', sueldo:0}, fechaAlta:new Date().toISOString() }
+];
+
+// These will be filled with real IDs after creation
+let ownerIds = [];
+let propIds = [];
+let tenantIds = [];
+
+async function seed() {
+  const btn = document.getElementById('btnSeed');
+  const email = document.getElementById('seedEmail').value.trim();
+  const pass  = document.getElementById('seedPass').value;
+  const loginErr = document.getElementById('loginErr');
+
+  if (!email || !pass) {
+    loginErr.textContent = 'Ingresá tu email y contraseña de admin.';
+    loginErr.style.display = 'block';
+    return;
+  }
+  loginErr.style.display = 'none';
+
+  btn.disabled = true;
+  document.getElementById('btnTxt').style.display = 'none';
+  document.getElementById('spin').style.display = 'block';
+
+  log('ℹ️ Autenticando…', 'info');
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, pass);
+    log('✅ Autenticado correctamente', 'ok');
+  } catch(e) {
+    log('❌ Error de autenticación: ' + e.message, 'err');
+    btn.disabled = false;
+    document.getElementById('btnTxt').style.display = 'block';
+    document.getElementById('spin').style.display = 'none';
+    return;
+  }
+
+  log('ℹ️ Conectando con Firestore…', 'info');
+  let ok = 0;
+
+  // 1. Propietarios
+  log('👤 Cargando propietarios…', 'info');
+  for (const ow of DEMO_OWNERS) {
+    try {
+      const ref = await db.collection('propietarios').add({...ow, updatedAt: new Date().toISOString()});
+      ownerIds.push(ref.id);
+      log(`✓ Propietario: "${ow.nombre}"`, 'ok'); ok++;
+    } catch(e) { log(`✗ Error propietario "${ow.nombre}": ${e.message}`, 'err'); ownerIds.push(null); }
+  }
+
+  // 2. Propiedades (asignar propietarios)
+  log('🏠 Cargando propiedades…', 'info');
+  const propAssign = [ownerIds[0], ownerIds[0], ownerIds[2], ownerIds[1], ownerIds[3], ownerIds[2]];
+  const ownerNames = DEMO_OWNERS.map(o=>o.nombre);
+  for (let i=0; i<DEMO.length; i++) {
+    try {
+      const prop = {...DEMO[i], propietarioId: propAssign[i]||null, propietarioNombre: ownerNames[i%4]||null, updatedAt: new Date().toISOString()};
+      const ref = await db.collection('propiedades').add(prop);
+      propIds.push(ref.id);
+      log(`✓ Propiedad: "${DEMO[i].titulo}"`, 'ok'); ok++;
+    } catch(e) { log(`✗ Error propiedad "${DEMO[i].titulo}": ${e.message}`, 'err'); propIds.push(null); }
+  }
+
+  // 3. Inquilinos
+  log('🔑 Cargando inquilinos…', 'info');
+  const tenPropAssign = [propIds[0], propIds[1], propIds[2]];
+  for (let i=0; i<DEMO_INQUILINOS.length; i++) {
+    try {
+      const ten = {...DEMO_INQUILINOS[i], propiedadId: tenPropAssign[i]||null, updatedAt: new Date().toISOString()};
+      const ref = await db.collection('inquilinos').add(ten);
+      tenantIds.push(ref.id);
+      log(`✓ Inquilino: "${DEMO_INQUILINOS[i].nombre}"`, 'ok'); ok++;
+    } catch(e) { log(`✗ Error inquilino "${DEMO_INQUILINOS[i].nombre}": ${e.message}`, 'err'); tenantIds.push(null); }
+  }
+
+  // 4. Contratos
+  log('📄 Cargando contratos…', 'info');
+  const contratos = [
+    { propiedadId:propIds[0], propNombre:'Departamento Planta Alta – Centro', inquilinoId:tenantIds[0], tenNombre:'Franco Panontini', fechaInicio:'2024-09-01', fechaFin:'2026-08-31', valorInicial:400000, valorActual:629740, periodoActualizacion:3, proximaActualizacion:'2026-06-01', ctaEcogas:'22045481', ctaCoopElec:'200315', estado:'Activo', notas:'Contrato en curso. Actualiza mar-jun-sep-dic.', pdfUrl:null },
+    { propiedadId:propIds[1], propNombre:'Casa con Jardín – Argüello', inquilinoId:tenantIds[1], tenNombre:'Valentina Gómez', fechaInicio:'2025-01-01', fechaFin:'2026-12-31', valorInicial:800000, valorActual:1200000, periodoActualizacion:3, proximaActualizacion:'2026-07-01', ctaEcogas:'33056782', ctaCoopElec:'310456', estado:'Activo', notas:'', pdfUrl:null },
+    { propiedadId:propIds[2], propNombre:'Local Comercial – Nueva Córdoba', inquilinoId:tenantIds[2], tenNombre:'Martín Rodríguez', fechaInicio:'2025-03-01', fechaFin:'2027-02-28', valorInicial:600000, valorActual:980000, periodoActualizacion:3, proximaActualizacion:'2026-06-01', ctaEcogas:null, ctaCoopElec:'420789', estado:'Activo', notas:'Local gastronómico', pdfUrl:null }
+  ];
+  const contratoIds = [];
+  for (const ct of contratos) {
+    try {
+      const ref = await db.collection('contratos').add({...ct, fechaAlta:new Date().toISOString(), updatedAt:new Date().toISOString()});
+      contratoIds.push(ref.id);
+      log(`✓ Contrato: "${ct.propNombre}"`, 'ok'); ok++;
+    } catch(e) { log(`✗ Error contrato: ${e.message}`, 'err'); contratoIds.push(null); }
+  }
+
+  // 5. Pagos (últimos 3 meses por contrato)
+  log('💰 Cargando pagos…', 'info');
+  const meses = ['2026-03','2026-04','2026-05'];
+  const pagosDef = [
+    { contratoId:contratoIds[0], propNombre:'Depto Planta Alta – Centro', tenNombre:'Franco Panontini', alquiler:629740, agua:-11548, tasa:22331, extra:15000, extraDetalle:'Gastos varios' },
+    { contratoId:contratoIds[1], propNombre:'Casa Jardín – Argüello', tenNombre:'Valentina Gómez', alquiler:1200000, agua:8500, tasa:18000, extra:0, extraDetalle:'' },
+    { contratoId:contratoIds[2], propNombre:'Local Comercial – N. Cba', tenNombre:'Martín Rodríguez', alquiler:980000, agua:0, tasa:25000, extra:0, extraDetalle:'' }
+  ];
+  for (const p of pagosDef) {
+    for (let mi=0; mi<meses.length; mi++) {
+      const mes = meses[mi];
+      const esPagado = mi < 2;
+      const total = p.alquiler + p.agua + p.tasa + p.extra;
+      try {
+        await db.collection('pagos').add({
+          ...p, mesAno:mes, total, estado:esPagado?'Pagado':'Pendiente',
+          fechaPago:esPagado?`${mes}-08`:null,
+          fechaAlta:new Date().toISOString(), updatedAt:new Date().toISOString()
+        });
+        ok++;
+      } catch(e) { log(`✗ Error pago ${mes}: ${e.message}`, 'err'); }
+    }
+  }
+  log(`✓ ${pagosDef.length * meses.length} pagos cargados`, 'ok');
+
+  // 6. IPC histórico
+  log('📈 Cargando índices IPC…', 'info');
+  const ipcData = [
+    { periodo:'Dic 2025 – Feb 2026', variacion:7.8, contratosActualizados:3 },
+    { periodo:'Mar 2026 – May 2026', variacion:8.5, contratosActualizados:0 }
+  ];
+  for (const ipc of ipcData) {
+    try {
+      await db.collection('ipc').add({...ipc, fechaCarga:new Date().toISOString()});
+      log(`✓ IPC: ${ipc.periodo} (+${ipc.variacion}%)`, 'ok'); ok++;
+    } catch(e) { log(`✗ Error IPC: ${e.message}`, 'err'); }
+  }
+
+  // 7. Checklist ejemplo
+  log('✅ Cargando checklist de ejemplo…', 'info');
+  const clItems = {};
+  [[0,0,'SI'],[0,1,'SI'],[1,0,'SI'],[1,1,'SI'],[1,2,'SI'],[1,3,'SI'],[1,4,'SI'],[1,5,'SI'],[1,6,'SI'],[2,0,'SI'],[2,1,'SI'],[2,2,'NO'],[2,3,'SI'],[2,4,'SI'],[2,5,'SI'],[2,6,'SI'],[2,7,'SI'],[2,8,'SI'],[2,9,'SI'],[2,10,'SI'],[3,0,'SI'],[3,1,'SI'],[3,2,'SI'],[3,3,'SI'],[3,4,'SI'],[4,0,'SI'],[4,1,'SI'],[4,2,'SI'],[4,3,'SI'],[5,0,'SI'],[5,1,'SI'],[5,2,'SI'],[5,3,'SI'],[5,4,'SI'],[6,0,'SI'],[6,1,'SI'],[6,2,'SI'],[6,3,'SI'],[7,0,'SI'],[7,1,'SI'],[7,2,'SI'],[7,3,'NO']].forEach(([s,i,v])=>{clItems[`cl_${s}_${i}`]=v;});
+  clItems['cl_2_2_comment']='Falta sellado, se realizará en los próximos días';
+  clItems['cl_7_3_comment']='Zócalo del baño con pequeña rajadura';
+  try {
+    await db.collection('checklists').add({
+      propiedadId:propIds[0]||null, propNombre:'Departamento Planta Alta – Centro',
+      inquilinoId:tenantIds[0]||null, tenNombre:'Franco Panontini',
+      fecha:'2024-09-01', tipo:'Entrega de llaves',
+      domicilio:'San Martín 1250, Piso 2', manzana:'', lote:'',
+      items:clItems, firmado:true,
+      fechaAlta:new Date().toISOString(), updatedAt:new Date().toISOString()
+    });
+    log('✓ Checklist de entrega cargado', 'ok'); ok++;
+  } catch(e) { log(`✗ Error checklist: ${e.message}`, 'err'); }
+
+  document.getElementById('spin').style.display = 'none';
+  log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`, 'info');
+  log(`✅ ${ok} registros cargados en Firestore`, 'ok');
+  document.getElementById('done').style.display = 'block';
+  btn.disabled = false;
+  document.getElementById('btnTxt').style.display = 'block';
+}
+</script>
+</body>
+</html>

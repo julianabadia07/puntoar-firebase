@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PuntoAr · Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --v:#4aaa5a;--vd:#358944;--vl:#e8f5eb;
+  --n:#1a1a1a;--g:#666;--gl:#f4f5f4;
+  --w:#fff;--r:12px;
+  --sh:0 4px 20px rgba(0,0,0,.09);
+  --danger:#ef4444;--warn:#f59e0b;--info:#3b82f6;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f0f4f1;color:var(--n);min-height:100vh}
+
+/* LOGIN */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0e1f10,#1a3a1e,#0e1f10);padding:1.5rem}
+.lbox{background:#fff;border-radius:20px;width:100%;max-width:390px;box-shadow:0 32px 80px rgba(0,0,0,.4);overflow:hidden;animation:bxIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes bxIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.lhdr{background:linear-gradient(135deg,#111,#1e3d22 60%,#2e6635);padding:1.9rem 2rem 1.5rem;text-align:center;position:relative}
+.lhdr::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:16px;background:#fff;clip-path:ellipse(55% 100% at 50% 100%)}
+.lhdr img{height:46px;object-fit:contain;display:block;margin:0 auto .7rem}
+.lhdr h1{font-family:'Playfair Display',serif;font-size:1.35rem;color:#fff;margin-bottom:.12rem}
+.lhdr p{font-size:.73rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em}
+.lbody{padding:1.5rem 1.9rem 1.8rem}
+.lg{margin-bottom:1rem}
+.lg label{display:block;font-size:.71rem;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.32rem}
+.iw{position:relative}
+.iw span{position:absolute;left:.82rem;top:50%;transform:translateY(-50%);color:#bbb;pointer-events:none}
+.iw input{width:100%;padding:.68rem 1rem .68rem 2.4rem;border:2px solid #e8e8e8;border-radius:10px;font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;background:#fafafa;transition:border-color .2s,box-shadow .2s}
+.iw input:focus{border-color:var(--v);background:#fff;box-shadow:0 0 0 3px rgba(74,170,90,.1)}
+.lerr{display:none;background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:.58rem .82rem;font-size:.81rem;margin-bottom:.85rem;align-items:center;gap:.4rem}
+.lerr.show{display:flex}
+.btnl{width:100%;padding:.78rem;background:linear-gradient(135deg,var(--v),var(--vd));color:#fff;border:none;border-radius:10px;font-size:.93rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;box-shadow:0 4px 14px rgba(74,170,90,.28)}
+.btnl:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(74,170,90,.35)}
+.btnl:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.sp{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ld .sp{display:block}.ld .btxt{display:none}
+
+/* APP SHELL */
+#appShell{display:none}
+.layout{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:255px;background:#111;color:#fff;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;transition:transform .3s}
+.sb-logo{padding:1.2rem 1.4rem;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.sb-logo img{height:32px;object-fit:contain}
+.sb-logo .slt div:first-child{font-size:.82rem;font-weight:700}
+.sb-logo .slt span{font-size:.62rem;opacity:.38;text-transform:uppercase;letter-spacing:.09em}
+.sb-nav{padding:.6rem 0;flex:1}
+.sb-sec{font-size:.62rem;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.11em;padding:.55rem 1.4rem .22rem;margin-top:.4rem}
+.sb-item{display:flex;align-items:center;gap:.65rem;padding:.68rem 1.4rem;cursor:pointer;font-size:.85rem;color:rgba(255,255,255,.62);border:none;background:none;width:100%;text-align:left;transition:background .14s,color .14s;text-decoration:none;border-left:3px solid transparent;position:relative}
+.sb-item:hover{background:rgba(74,170,90,.14);color:#fff}
+.sb-item.active{background:rgba(74,170,90,.2);color:#fff;border-left-color:var(--v)}
+.sb-item .si{font-size:.98rem;width:20px;text-align:center;flex-shrink:0}
+.sb-item.danger{color:#ff8a80}
+.sb-item.danger:hover{background:rgba(239,68,68,.15)}
+.sb-badge{position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:var(--v);color:#fff;border-radius:50px;font-size:.65rem;font-weight:700;padding:.1rem .5rem;min-width:18px;text-align:center}
+.sb-foot{padding:.85rem 1.4rem;border-top:1px solid rgba(255,255,255,.06);font-size:.73rem;color:rgba(255,255,255,.3);flex-shrink:0}
+.sb-user{color:rgba(255,255,255,.58);font-size:.77rem;margin-bottom:.22rem;display:flex;align-items:center;gap:.4rem}
+
+/* MAIN */
+.main{flex:1;margin-left:255px;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--w);border-bottom:1px solid #e0e8e2;padding:.78rem 1.8rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.topbar-left{display:flex;align-items:center;gap:.8rem}
+.topbar h1{font-size:1.08rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+.topbar-right{display:flex;gap:.55rem;align-items:center}
+.content{padding:1.5rem 1.8rem;flex:1}
+
+/* BUTTONS */
+.btn{padding:.5rem 1.1rem;border-radius:8px;font-size:.82rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:.35rem;white-space:nowrap}
+.btn-p{background:var(--v);color:#fff}.btn-p:hover{background:var(--vd)}
+.btn-s{background:var(--gl);color:var(--n);border:1px solid #dde}.btn-s:hover{background:#e8e8e8}
+.btn-d{background:var(--danger);color:#fff}.btn-d:hover{background:#dc2626}
+.btn-w{background:var(--warn);color:#fff}.btn-w:hover{background:#d97706}
+.btn-i{background:var(--info);color:#fff}.btn-i:hover{background:#2563eb}
+.btn-sm{padding:.32rem .72rem;font-size:.76rem}
+.btn-xs{padding:.22rem .55rem;font-size:.72rem}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:.9rem;margin-bottom:1.5rem}
+.sc{background:var(--w);border-radius:var(--r);padding:1rem 1.3rem;box-shadow:var(--sh);border-left:4px solid var(--v)}
+.sc.w{border-color:var(--warn)}.sc.d{border-color:var(--danger)}.sc.i{border-color:var(--info)}.sc.g{border-color:#8b5cf6}
+.sc-n{font-family:'Playfair Display',serif;font-size:1.85rem;font-weight:700;line-height:1}
+.sc-l{font-size:.7rem;color:var(--g);text-transform:uppercase;letter-spacing:.06em;margin-top:.22rem}
+
+/* CARDS */
+.card{background:var(--w);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:1.2rem}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.4rem;border-bottom:1px solid #f0f0f0;flex-wrap:wrap;gap:.6rem}
+.card-hdr h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem}
+.card-body{padding:1.4rem}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--gl);padding:.65rem .9rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g);text-align:left;border-bottom:1px solid #e8e8e8;white-space:nowrap}
+tbody tr{border-bottom:1px solid #f5f5f5;transition:background .13s}
+tbody tr:hover{background:#fafff9}
+tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
+.td-main{font-weight:600}.td-sub{font-size:.72rem;color:var(--g);margin-top:.1rem}
+.td-acts{display:flex;gap:.32rem;flex-wrap:wrap}
+.empty-st{text-align:center;padding:2.5rem;color:var(--g)}
+.empty-st span{font-size:2.4rem;display:block;margin-bottom:.5rem}
+
+/* BADGES */
+.badge{padding:.2rem .58rem;border-radius:50px;font-size:.69rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;display:inline-block;white-space:nowrap}
+.b-green{background:#dcfce7;color:#15803d}
+.b-yellow{background:#fef9c3;color:#a16207}
+.b-red{background:#fee2e2;color:#dc2626}
+.b-blue{background:#dbeafe;color:#1d4ed8}
+.b-gray{background:#f3f4f6;color:#6b7280}
+.b-purple{background:#ede9fe;color:#7c3aed}
+
+/* SEARCH BAR */
+.search-bar{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;margin-bottom:1.2rem}
+.search-bar input,.search-bar select{padding:.48rem .82rem;border:1.5px solid #dde;border-radius:8px;font-size:.84rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--gl);transition:border-color .2s}
+.search-bar input{min-width:200px;flex:1}
+.search-bar input:focus,.search-bar select:focus{border-color:var(--v);background:#fff}
+
+/* MODAL */
+.ov{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.52);backdrop-filter:blur(3px);justify-content:center;align-items:flex-start;padding:1.2rem 1rem;overflow-y:auto}
+.ov.open{display:flex}
+.modal{background:#fff;border-radius:var(--r);width:100%;max-width:640px;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:mIn .23s ease}
+.modal.wide{max-width:860px}
+.modal.narrow{max-width:480px}
+@keyframes mIn{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:none}}
+.mhdr{background:linear-gradient(135deg,#111,#2a5032);color:#fff;padding:1.25rem 1.65rem;border-radius:var(--r) var(--r) 0 0;display:flex;align-items:center;justify-content:space-between}
+.mhdr h2{font-size:1.02rem;font-weight:700}
+.mcls{background:rgba(255,255,255,.15);border:none;color:#fff;width:29px;height:29px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0}
+.mcls:hover{background:rgba(255,255,255,.28)}
+.mbody{padding:1.5rem 1.65rem}
+.mfooter{display:flex;gap:.65rem;justify-content:flex-end;padding-top:.9rem;border-top:1px solid #f0f0f0;flex-wrap:wrap}
+
+/* FORM */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:1.1rem}
+.fg.c1{grid-template-columns:1fr}.fg.c3{grid-template-columns:1fr 1fr 1fr}
+.fgr{display:flex;flex-direction:column;gap:.26rem}
+.fgr.full{grid-column:1/-1}
+.fgr label{font-size:.7rem;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.06em}
+.fgr input,.fgr select,.fgr textarea{padding:.56rem .8rem;border:1.5px solid #dde;border-radius:8px;font-size:.87rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--gl);transition:border-color .2s;color:var(--n)}
+.fgr input:focus,.fgr select:focus,.fgr textarea:focus{border-color:var(--v);background:#fff}
+.fgr textarea{resize:vertical;min-height:72px}
+.chk{display:flex;align-items:center;gap:.42rem;cursor:pointer;font-size:.87rem}
+.chk input{width:15px;height:15px;accent-color:var(--v)}
+.fs-title{font-size:.69rem;font-weight:700;color:var(--v);text-transform:uppercase;letter-spacing:.09em;margin-bottom:.7rem;padding-bottom:.32rem;border-bottom:1px solid var(--vl)}
+.dl{display:flex;flex-direction:column;gap:.32rem;margin-bottom:.42rem}
+.dl-i{display:flex;gap:.32rem;align-items:center}
+.dl-i input{flex:1;padding:.46rem .65rem;border:1.5px solid #dde;border-radius:7px;font-size:.82rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--gl)}
+.dl-i input:focus{border-color:var(--v);background:#fff}
+.dl-rm{background:none;border:none;cursor:pointer;color:#ccc;font-size:.95rem;transition:color .18s;flex-shrink:0}
+.dl-rm:hover{color:var(--danger)}
+.btn-add-item{background:none;border:1.5px dashed #ccc;color:var(--g);padding:.36rem .72rem;border-radius:7px;font-size:.78rem;cursor:pointer;transition:all .2s;width:100%;text-align:left}
+.btn-add-item:hover{border-color:var(--v);color:var(--v);background:var(--vl)}
+
+/* MEDIA UPLOAD */
+.media-drop{border:2px dashed #c5d9c7;border-radius:10px;padding:1.2rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--gl)}
+.media-drop:hover{border-color:var(--v);background:var(--vl)}
+.media-drop input{display:none}
+.media-prev{display:grid;grid-template-columns:repeat(auto-fill,minmax(85px,1fr));gap:.42rem;margin-top:.65rem}
+.mp-item{position:relative;aspect-ratio:4/3;border-radius:7px;overflow:hidden;border:1px solid #dde;background:#f0f0f0}
+.mp-item img,.mp-item video{width:100%;height:100%;object-fit:cover}
+.mp-item .rm{position:absolute;top:.17rem;right:.17rem;background:rgba(239,68,68,.9);color:#fff;border:none;width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:.62rem;display:flex;align-items:center;justify-content:center}
+.mp-item .type-badge{position:absolute;bottom:.17rem;left:.17rem;background:rgba(0,0,0,.6);color:#fff;font-size:.6rem;padding:.08rem .3rem;border-radius:4px}
+
+/* CONFIRM */
+.conf-ov{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.6);justify-content:center;align-items:center}
+.conf-ov.open{display:flex}
+.conf-box{background:#fff;border-radius:var(--r);padding:1.7rem;max-width:350px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.conf-box h3{font-size:1.02rem;margin-bottom:.4rem}
+.conf-box p{color:var(--g);font-size:.86rem;margin-bottom:1.2rem;line-height:1.5}
+.conf-btns{display:flex;gap:.6rem;justify-content:center}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.3rem;right:1.3rem;z-index:600;background:var(--n);color:#fff;padding:.68rem 1.25rem;border-radius:10px;font-size:.85rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(65px);opacity:0;transition:all .27s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:.42rem;max-width:360px}
+.toast.show{transform:none;opacity:1}
+.toast.ok{border-left:4px solid var(--v)}.toast.err{border-left:4px solid var(--danger)}.toast.info{border-left:4px solid var(--info)}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:2px solid #f0f0f0;margin-bottom:1.4rem}
+.tab{padding:.65rem 1.2rem;font-size:.84rem;font-weight:600;color:var(--g);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .18s,border-color .18s}
+.tab.active{color:var(--v);border-bottom-color:var(--v)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* INFO BOX */
+.info-box{background:var(--vl);border:1px solid #c8e6cc;border-radius:9px;padding:.85rem 1.1rem;font-size:.84rem;color:#2d6a35;margin-bottom:1.1rem;display:flex;align-items:flex-start;gap:.5rem}
+
+/* CHECKLIST */
+.cl-section{margin-bottom:1.4rem}
+.cl-section h3{font-size:.82rem;font-weight:700;color:var(--v);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.75rem;padding:.5rem .75rem;background:var(--vl);border-radius:7px}
+.cl-grid{display:grid;grid-template-columns:1fr;gap:.4rem}
+.cl-row{display:grid;grid-template-columns:1fr 80px 80px 1fr;gap:.5rem;align-items:center;padding:.42rem .65rem;background:var(--gl);border-radius:7px;font-size:.83rem}
+.cl-row:nth-child(even){background:#f9f9f9}
+.cl-label{font-weight:500}
+.cl-radio{display:flex;gap:.5rem;justify-content:center}
+.cl-radio label{display:flex;align-items:center;gap:.22rem;cursor:pointer;font-size:.78rem;font-weight:600}
+.cl-radio input[type=radio]{accent-color:var(--v)}
+.cl-comment input{width:100%;padding:.3rem .55rem;border:1px solid #dde;border-radius:5px;font-size:.78rem;font-family:'DM Sans',sans-serif;outline:none;background:#fff}
+.cl-header-row{display:grid;grid-template-columns:1fr 80px 80px 1fr;gap:.5rem;padding:.3rem .65rem;font-size:.68rem;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.06em}
+
+/* PAGOS */
+.pago-card{background:var(--gl);border-radius:10px;padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:.6rem;border-left:4px solid #ddd;transition:border-color .2s}
+.pago-card.pagado{border-left-color:var(--v)}
+.pago-card.pendiente{border-left-color:var(--warn)}
+.pago-card.vencido{border-left-color:var(--danger)}
+.pago-info{flex:1}
+.pago-mes{font-weight:700;font-size:.95rem}
+.pago-det{font-size:.78rem;color:var(--g);margin-top:.15rem}
+.pago-total{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--n)}
+.pago-acts{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+
+/* IPC */
+.ipc-card{background:linear-gradient(135deg,var(--v),var(--vd));color:#fff;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.2rem}
+.ipc-val{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700}
+.ipc-label{font-size:.78rem;opacity:.8;margin-top:.15rem}
+
+/* PDF preview */
+.pdf-frame{width:100%;height:500px;border:none;border-radius:8px;background:#f0f0f0}
+
+/* KANBAN-style status */
+.status-flow{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:1.2rem}
+.sf-step{display:flex;align-items:center;gap:.4rem;font-size:.8rem;font-weight:600;padding:.4rem .85rem;border-radius:50px;background:var(--gl);color:var(--g)}
+.sf-step.done{background:var(--vl);color:var(--vd)}
+.sf-step.current{background:var(--v);color:#fff}
+.sf-arrow{color:#ccc;font-size:.85rem}
+
+/* Responsive */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.mob-open{transform:none}
+  .main{margin-left:0}
+  .fg{grid-template-columns:1fr}
+  .fg.c3{grid-template-columns:1fr 1fr}
+  .cl-row{grid-template-columns:1fr 60px 60px}
+  .cl-comment{display:none}
+}
+@media(max-width:600px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .content{padding:1rem}
+  .topbar{padding:.65rem 1rem}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="lbox">
+    <div class="lhdr">
+      <img id="loginLogo" alt="PuntoAr"/>
+      <h1>Panel Administrativo</h1>
+      <p>PuntoAr Obras Civiles</p>
+    </div>
+    <div class="lbody">
+      <div class="lerr" id="lerr">⚠️ <span id="lerrTxt"></span></div>
+      <div class="lg"><label>Email</label>
+        <div class="iw"><span>✉️</span><input type="email" id="liEmail" placeholder="admin@puntoar.com" autocomplete="email"/></div>
+      </div>
+      <div class="lg"><label>Contraseña</label>
+        <div class="iw"><span>🔒</span><input type="password" id="liPass" placeholder="••••••••" autocomplete="current-password" id="liPass"/></div>
+      </div>
+      <button class="btnl" id="btnLogin">
+        <span class="btxt">Ingresar →</span><div class="sp"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appShell">
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <img id="sbLogo" alt="PuntoAr"/>
+    <div class="slt"><div>PuntoAr</div><span>Admin v3</span></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Principal</div>
+    <button class="sb-item active" onclick="nav('dashboard')"><span class="si">📊</span> Dashboard</button>
+    <button class="sb-item" onclick="nav('propiedades')"><span class="si">🏠</span> Propiedades</button>
+    <button class="sb-item" onclick="nav('propietarios')"><span class="si">👤</span> Propietarios</button>
+
+    <div class="sb-sec">Gestión</div>
+    <button class="sb-item" onclick="nav('inquilinos')"><span class="si">🔑</span> Inquilinos</button>
+    <button class="sb-item" onclick="nav('contratos')"><span class="si">📄</span> Contratos</button>
+    <button class="sb-item" onclick="nav('pagos')"><span class="si">💰</span> Pagos <span class="sb-badge" id="badgePagos">0</span></button>
+    <button class="sb-item" onclick="nav('checklists')"><span class="si">✅</span> Checklists</button>
+
+    <div class="sb-sec">Config</div>
+    <button class="sb-item" onclick="nav('ipc')"><span class="si">📈</span> IPC / Índices</button>
+    <a href="../public/index.html" class="sb-item" target="_blank"><span class="si">🌐</span> Ver web pública</a>
+    <button class="sb-item" onclick="openCp()"><span class="si">🔑</span> Contraseña</button>
+    <button class="sb-item danger" onclick="doLogout()"><span class="si">🚪</span> Salir</button>
+  </nav>
+  <div class="sb-foot">
+    <div class="sb-user">👤 <span id="sbUser"></span></div>
+    PuntoAr Obras Civiles · 2026
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="btn btn-s btn-sm" id="btnHamburger" onclick="toggleSidebar()" style="display:none">☰</button>
+      <h1 id="pageTitle">📊 Dashboard</h1>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-s btn-sm" onclick="window.open('../public/index.html','_blank')">🌐 Web</button>
+      <button class="btn btn-p btn-sm" id="topbarCTA" onclick="topbarAction()">➕ Nueva propiedad</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div id="sec-dashboard" class="section">
+      <div class="stats-row" id="dashStats"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+        <div class="card">
+          <div class="card-hdr"><h2>⏰ Pagos pendientes</h2><button class="btn btn-s btn-sm" onclick="nav('pagos')">Ver todos</button></div>
+          <div class="card-body" id="dashPagosPend"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><h2>📅 Contratos por vencer</h2></div>
+          <div class="card-body" id="dashContratosPorVencer"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1.2rem">
+        <div class="card-hdr"><h2>🏠 Últimas propiedades</h2><button class="btn btn-s btn-sm" onclick="nav('propiedades')">Ver todas</button></div>
+        <div class="card-body" id="dashProps"></div>
+      </div>
+    </div>
+
+    <!-- ══ PROPIEDADES ══ -->
+    <div id="sec-propiedades" class="section" style="display:none">
+      <div class="search-bar">
+        <input type="text" id="pSearch" placeholder="🔍 Buscar propiedad…" oninput="renderProps()"/>
+        <select id="pTipo" onchange="renderProps()"><option value="">Todos los tipos</option><option>Departamento</option><option>Casa</option><option>Local comercial</option><option>Terreno</option></select>
+        <select id="pEst" onchange="renderProps()"><option value="">Todo estado</option><option>Disponible</option><option>Reservado</option><option>Alquilado</option></select>
+        <select id="pProp" onchange="renderProps()"><option value="">Todos los propietarios</option></select>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><h2>🏠 Propiedades</h2><button class="btn btn-p btn-sm" onclick="openPropForm()">➕ Nueva</button></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Foto</th><th>Propiedad</th><th>Propietario</th><th>Tipo</th><th>Precio/mes</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="propsBody"></tbody></table>
+          <div class="empty-st" id="propsEmpty" style="display:none"><span>🏚</span><p>Sin propiedades.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PROPIETARIOS ══ -->
+    <div id="sec-propietarios" class="section" style="display:none">
+      <div class="search-bar">
+        <input type="text" id="owSearch" placeholder="🔍 Buscar propietario…" oninput="renderOwners()"/>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><h2>👤 Propietarios</h2><button class="btn btn-p btn-sm" onclick="openOwnerForm()">➕ Nuevo</button></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Nombre / Empresa</th><th>CUIT</th><th>Teléfono</th><th>Email</th><th>CBU / Alias</th><th>Propiedades</th><th>Acciones</th></tr></thead>
+          <tbody id="ownersBody"></tbody></table>
+          <div class="empty-st" id="ownersEmpty" style="display:none"><span>👤</span><p>Sin propietarios cargados.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ INQUILINOS ══ -->
+    <div id="sec-inquilinos" class="section" style="display:none">
+      <div class="search-bar">
+        <input type="text" id="tenSearch" placeholder="🔍 Buscar inquilino…" oninput="renderTenants()"/>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><h2>🔑 Inquilinos</h2><button class="btn btn-p btn-sm" onclick="openTenantForm()">➕ Nuevo</button></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Nombre</th><th>DNI</th><th>Teléfono</th><th>Email</th><th>Propiedad</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="tenantsBody"></tbody></table>
+          <div class="empty-st" id="tenantsEmpty" style="display:none"><span>🔑</span><p>Sin inquilinos cargados.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CONTRATOS ══ -->
+    <div id="sec-contratos" class="section" style="display:none">
+      <div class="search-bar">
+        <input type="text" id="ctSearch" placeholder="🔍 Buscar contrato…" oninput="renderContratos()"/>
+        <select id="ctEst" onchange="renderContratos()"><option value="">Todo estado</option><option>Activo</option><option>Vencido</option><option>Rescindido</option></select>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><h2>📄 Contratos</h2><button class="btn btn-p btn-sm" onclick="openContratoForm()">➕ Nuevo</button></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Propiedad</th><th>Inquilino</th><th>Inicio</th><th>Fin</th><th>Alquiler actual</th><th>Próx. actualiz.</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="contratosBody"></tbody></table>
+          <div class="empty-st" id="contratosEmpty" style="display:none"><span>📄</span><p>Sin contratos.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGOS ══ -->
+    <div id="sec-pagos" class="section" style="display:none">
+      <div class="search-bar">
+        <input type="text" id="pagoSearch" placeholder="🔍 Buscar…" oninput="renderPagos()"/>
+        <select id="pagoEst" onchange="renderPagos()"><option value="">Todos</option><option>Pendiente</option><option>Pagado</option><option>Vencido</option></select>
+        <select id="pagoMes" onchange="renderPagos()"></select>
+        <button class="btn btn-p btn-sm" onclick="generarPagosDelMes()">⚡ Generar mes actual</button>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><h2>💰 Pagos mensuales</h2><button class="btn btn-s btn-sm" onclick="openPagoForm()">➕ Pago manual</button></div>
+        <div id="pagosContainer"></div>
+      </div>
+    </div>
+
+    <!-- ══ CHECKLISTS ══ -->
+    <div id="sec-checklists" class="section" style="display:none">
+      <div class="search-bar">
+        <input type="text" id="clSearch" placeholder="🔍 Buscar checklist…" oninput="renderChecklists()"/>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><h2>✅ Checklists de entrega</h2><button class="btn btn-p btn-sm" onclick="openChecklistForm()">➕ Nuevo checklist</button></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Propiedad</th><th>Inquilino</th><th>Fecha</th><th>Tipo</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="checklistsBody"></tbody></table>
+          <div class="empty-st" id="checklistsEmpty" style="display:none"><span>✅</span><p>Sin checklists.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ IPC ══ -->
+    <div id="sec-ipc" class="section" style="display:none">
+      <div class="ipc-card">
+        <div style="font-size:.78rem;opacity:.8;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.08em">Último IPC cargado</div>
+        <div class="ipc-val" id="ipcValor">—</div>
+        <div class="ipc-label" id="ipcPeriodo">Sin datos. Cargá el índice actual.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+        <div class="card">
+          <div class="card-hdr"><h2>📈 Cargar IPC</h2></div>
+          <div class="card-body">
+            <div class="info-box">ℹ️ El IPC es publicado por el INDEC cada mes. Cargá el índice acumulado del trimestre para actualizar los alquileres.</div>
+            <div class="fg c1">
+              <div class="fgr"><label>Período (ej: Marzo–Mayo 2026)</label><input type="text" id="ipcPer" placeholder="Mar–May 2026"/></div>
+              <div class="fgr"><label>Variación % del trimestre</label><input type="number" id="ipcPct" step="0.01" placeholder="ej: 8.5"/></div>
+            </div>
+            <button class="btn btn-p" onclick="guardarIPC()">💾 Guardar IPC</button>
+            <div style="margin-top:.8rem">
+              <a href="https://www.indec.gob.ar/indec/web/Nivel4-Tema-3-5-31" target="_blank" class="btn btn-s btn-sm">📊 Ver IPC en INDEC →</a>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><h2>🔄 Contratos a actualizar</h2><button class="btn btn-p btn-sm" onclick="aplicarIPCTodos()">⚡ Aplicar a todos</button></div>
+          <div class="card-body" id="ipcContratos"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1.2rem">
+        <div class="card-hdr"><h2>📋 Historial IPC</h2></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Período</th><th>Variación %</th><th>Fecha carga</th><th>Contratos actualizados</th></tr></thead>
+          <tbody id="ipcHistorial"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /layout -->
+</div><!-- /appShell -->
+
+<!-- ══ MODALS ══ -->
+
+<!-- PROPIETARIO FORM -->
+<div class="ov" id="ovOwner">
+  <div class="modal">
+    <div class="mhdr"><h2 id="ownerFormTitle">👤 Nuevo Propietario</h2><button class="mcls" onclick="closeOv('ovOwner')">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="owId"/>
+      <div class="fs-title">Datos personales / empresa</div>
+      <div class="fg"><div class="fgr full"><label>Nombre completo o razón social *</label><input type="text" id="owNombre" placeholder="Constructores SA / Juan Pérez"/></div>
+        <div class="fgr"><label>CUIT / CUIL</label><input type="text" id="owCuit" placeholder="30-12345678-9"/></div>
+        <div class="fgr"><label>Condición IVA</label><select id="owIva"><option>Responsable Inscripto</option><option>Monotributista</option><option>Exento</option><option>Consumidor Final</option></select></div>
+        <div class="fgr"><label>Teléfono</label><input type="text" id="owTel" placeholder="+54 351 123-4567"/></div>
+        <div class="fgr"><label>Email</label><input type="email" id="owEmail" placeholder="propietario@email.com"/></div>
+        <div class="fgr full"><label>Dirección</label><input type="text" id="owDir" placeholder="Defensa 450, Cba Capital"/></div>
+      </div>
+      <div class="fs-title" style="margin-top:.8rem">Datos bancarios</div>
+      <div class="fg">
+        <div class="fgr"><label>CBU</label><input type="text" id="owCbu" placeholder="0070138520000000889951"/></div>
+        <div class="fgr"><label>Alias</label><input type="text" id="owAlias" placeholder="BOLDO.CALCO.PARED"/></div>
+        <div class="fgr"><label>Banco</label><input type="text" id="owBanco" placeholder="Banco Galicia"/></div>
+        <div class="fgr"><label>Nro. Cuenta</label><input type="text" id="owCuenta" placeholder="889-9 138-5"/></div>
+      </div>
+      <div class="fs-title" style="margin-top:.8rem">Notas</div>
+      <div class="fg c1"><div class="fgr"><textarea id="owNotas" rows="2" placeholder="Observaciones…"></textarea></div></div>
+      <div class="mfooter"><button class="btn btn-s" onclick="closeOv('ovOwner')">Cancelar</button><button class="btn btn-p" onclick="saveOwner()">💾 Guardar</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROPIEDAD FORM -->
+<div class="ov" id="ovProp">
+  <div class="modal wide">
+    <div class="mhdr"><h2 id="propFormTitle">🏠 Nueva Propiedad</h2><button class="mcls" onclick="closeOv('ovProp')">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="prId"/>
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('prop','info',this)">Información</button>
+        <button class="tab" onclick="switchTab('prop','ubic',this)">Ubicación</button>
+        <button class="tab" onclick="switchTab('prop','caract',this)">Características</button>
+        <button class="tab" onclick="switchTab('prop','media',this)">Fotos / Videos</button>
+        <button class="tab" onclick="switchTab('prop','conds',this)">Condiciones</button>
+      </div>
+      <div id="prop-tab-info" class="tab-panel active">
+        <div class="fg">
+          <div class="fgr full"><label>Título *</label><input type="text" id="prTit" placeholder="Departamento 2 dormitorios – Centro"/></div>
+          <div class="fgr"><label>Tipo *</label><select id="prTipo"><option>Departamento</option><option>Casa</option><option>Local comercial</option><option>Terreno</option></select></div>
+          <div class="fgr"><label>Estado</label><select id="prEst"><option>Disponible</option><option>Reservado</option><option>Alquilado</option></select></div>
+          <div class="fgr"><label>Propietario</label><select id="prProp"><option value="">Sin asignar</option></select></div>
+          <div class="fgr"><label class="chk"><input type="checkbox" id="prDest"/> Destacar ⭐</label></div>
+          <div class="fgr full"><label>Descripción</label><textarea id="prDesc" rows="3"></textarea></div>
+        </div>
+      </div>
+      <div id="prop-tab-ubic" class="tab-panel">
+        <div class="fg">
+          <div class="fgr full"><label>Dirección</label><input type="text" id="prDir" placeholder="Av. San Martín 1250, Piso 2"/></div>
+          <div class="fgr"><label>Barrio</label><input type="text" id="prBa" placeholder="Centro"/></div>
+          <div class="fgr"><label>Ciudad</label><input type="text" id="prCi" value="Córdoba"/></div>
+        </div>
+      </div>
+      <div id="prop-tab-caract" class="tab-panel">
+        <div class="fg c3">
+          <div class="fgr"><label>Superficie m²</label><input type="number" id="prM2"/></div>
+          <div class="fgr"><label>Ambientes</label><input type="number" id="prAmb"/></div>
+          <div class="fgr"><label>Dormitorios</label><input type="number" id="prDorm"/></div>
+          <div class="fgr"><label>Baños</label><input type="number" id="prBan"/></div>
+        </div>
+        <div class="fs-title" style="margin-top:.8rem">Precio y gastos</div>
+        <div class="fg">
+          <div class="fgr"><label>Alquiler mensual $ *</label><input type="number" id="prPre"/></div>
+          <div class="fgr"><label>Contrato 1 año $</label><input type="number" id="prC1"/></div>
+          <div class="fgr"><label>Contrato 2 años $</label><input type="number" id="prC2"/></div>
+          <div class="fgr"><label>Informes $ c/u</label><input type="number" id="prInf"/></div>
+        </div>
+      </div>
+      <div id="prop-tab-media" class="tab-panel">
+        <div class="media-drop" onclick="document.getElementById('mediaInput').click()">
+          <input type="file" id="mediaInput" accept="image/*,video/*" multiple onchange="handleMedia(event)"/>
+          <div style="font-size:1.7rem;margin-bottom:.3rem">📷🎬</div>
+          <div style="font-weight:600;font-size:.88rem">Fotos y Videos</div>
+          <div style="font-size:.74rem;color:#888;margin-top:.12rem">JPG, PNG, MP4, MOV · Múltiples archivos</div>
+        </div>
+        <div class="media-prev" id="mediaPrev"></div>
+      </div>
+      <div id="prop-tab-conds" class="tab-panel">
+        <div class="fs-title">Condiciones</div>
+        <div class="dl" id="dlCond"></div>
+        <button class="btn-add-item" onclick="addItem('dlCond')">+ Agregar condición</button>
+        <div class="fs-title" style="margin-top:1rem">Requisitos</div>
+        <div class="dl" id="dlReq"></div>
+        <button class="btn-add-item" onclick="addItem('dlReq')">+ Agregar requisito</button>
+      </div>
+      <div class="mfooter"><button class="btn btn-s" onclick="closeOv('ovProp')">Cancelar</button><button class="btn btn-p" onclick="saveProp()" id="btnSaveProp">💾 Guardar</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- INQUILINO FORM -->
+<div class="ov" id="ovTenant">
+  <div class="modal wide">
+    <div class="mhdr"><h2 id="tenantFormTitle">🔑 Nuevo Inquilino</h2><button class="mcls" onclick="closeOv('ovTenant')">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="tenId"/>
+      <div class="fs-title">Datos del inquilino</div>
+      <div class="fg">
+        <div class="fgr full"><label>Propiedad a alquilar</label><select id="tenPropId"><option value="">Sin asignar</option></select></div>
+        <div class="fgr"><label>Nombre completo *</label><input type="text" id="tenNombre"/></div>
+        <div class="fgr"><label>DNI</label><input type="text" id="tenDni"/></div>
+        <div class="fgr"><label>Teléfono</label><input type="text" id="tenTel"/></div>
+        <div class="fgr"><label>Email</label><input type="email" id="tenEmail"/></div>
+        <div class="fgr"><label>Ocupación / Empleador</label><input type="text" id="tenOcup"/></div>
+        <div class="fgr"><label>Sueldo aprox. $</label><input type="number" id="tenSueldo"/></div>
+        <div class="fgr full"><label>Dirección actual</label><input type="text" id="tenDir"/></div>
+        <div class="fgr full"><label>Notas</label><textarea id="tenNotas" rows="2"></textarea></div>
+      </div>
+      <div class="fs-title" style="margin-top:.8rem">Garante 1</div>
+      <div class="fg">
+        <div class="fgr"><label>Nombre</label><input type="text" id="g1Nombre"/></div>
+        <div class="fgr"><label>DNI</label><input type="text" id="g1Dni"/></div>
+        <div class="fgr"><label>Teléfono</label><input type="text" id="g1Tel"/></div>
+        <div class="fgr"><label>Sueldo $</label><input type="number" id="g1Sueldo"/></div>
+      </div>
+      <div class="fs-title" style="margin-top:.8rem">Garante 2 <span style="font-weight:400;font-size:.8rem;color:var(--g)">(opcional)</span></div>
+      <div class="fg">
+        <div class="fgr"><label>Nombre</label><input type="text" id="g2Nombre"/></div>
+        <div class="fgr"><label>DNI</label><input type="text" id="g2Dni"/></div>
+        <div class="fgr"><label>Teléfono</label><input type="text" id="g2Tel"/></div>
+        <div class="fgr"><label>Sueldo $</label><input type="number" id="g2Sueldo"/></div>
+      </div>
+      <div class="mfooter"><button class="btn btn-s" onclick="closeOv('ovTenant')">Cancelar</button><button class="btn btn-p" onclick="saveTenant()">💾 Guardar</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTRATO FORM -->
+<div class="ov" id="ovContrato">
+  <div class="modal wide">
+    <div class="mhdr"><h2 id="contratoFormTitle">📄 Nuevo Contrato</h2><button class="mcls" onclick="closeOv('ovContrato')">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="ctId"/>
+      <div class="fg">
+        <div class="fgr"><label>Propiedad *</label><select id="ctProp"><option value="">Seleccionar…</option></select></div>
+        <div class="fgr"><label>Inquilino *</label><select id="ctTen"><option value="">Seleccionar…</option></select></div>
+        <div class="fgr"><label>Fecha inicio *</label><input type="date" id="ctIni"/></div>
+        <div class="fgr"><label>Fecha fin *</label><input type="date" id="ctFin"/></div>
+        <div class="fgr"><label>Valor inicial $ *</label><input type="number" id="ctValorIni" placeholder="400000"/></div>
+        <div class="fgr"><label>Alquiler actual $</label><input type="number" id="ctValorAct"/></div>
+        <div class="fgr"><label>Actualización cada</label><select id="ctPeriodo"><option value="3">3 meses</option><option value="6">6 meses</option><option value="12">12 meses</option></select></div>
+        <div class="fgr"><label>Próxima actualización</label><input type="date" id="ctProxAct"/></div>
+        <div class="fgr"><label>Cta. Ecogas</label><input type="text" id="ctEcogas" placeholder="22045481"/></div>
+        <div class="fgr"><label>Cta. Cooperativa Eléctrica</label><input type="text" id="ctCoopElec" placeholder="200315"/></div>
+        <div class="fgr"><label>Estado</label><select id="ctEst2"><option>Activo</option><option>Vencido</option><option>Rescindido</option></select></div>
+        <div class="fgr full"><label>Notas / Cláusulas especiales</label><textarea id="ctNotas" rows="2"></textarea></div>
+      </div>
+      <div class="fs-title" style="margin-top:.8rem">📎 Contrato escaneado (PDF)</div>
+      <div class="media-drop" onclick="document.getElementById('ctPdfInput').click()" style="padding:.9rem">
+        <input type="file" id="ctPdfInput" accept=".pdf" onchange="handleCtPdf(event)"/>
+        <div style="font-size:1.4rem;margin-bottom:.2rem">📄</div>
+        <div style="font-size:.85rem;font-weight:600">Subir PDF del contrato</div>
+        <div id="ctPdfName" style="font-size:.75rem;color:var(--v);margin-top:.25rem"></div>
+      </div>
+      <div class="mfooter"><button class="btn btn-s" onclick="closeOv('ovContrato')">Cancelar</button><button class="btn btn-p" onclick="saveContrato()">💾 Guardar contrato</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGO FORM -->
+<div class="ov" id="ovPago">
+  <div class="modal narrow">
+    <div class="mhdr"><h2 id="pagoFormTitle">💰 Registrar Pago</h2><button class="mcls" onclick="closeOv('ovPago')">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="pagoId"/>
+      <div class="fg c1">
+        <div class="fgr"><label>Contrato / Propiedad *</label><select id="pagoContrato"><option value="">Seleccionar…</option></select></div>
+        <div class="fgr"><label>Mes y año *</label><input type="month" id="pagoMesAno"/></div>
+        <div class="fgr"><label>Alquiler $</label><input type="number" id="pagoAlq"/></div>
+        <div class="fgr"><label>Agua $</label><input type="number" id="pagoAgua"/></div>
+        <div class="fgr"><label>Tasa municipal $</label><input type="number" id="pagoTasa"/></div>
+        <div class="fgr"><label>Extra $</label><input type="number" id="pagoExtra" placeholder="0"/></div>
+        <div class="fgr"><label>Concepto extra</label><input type="text" id="pagoExtraDet" placeholder="Ej: reparación"/></div>
+        <div class="fgr"><label>Estado</label><select id="pagoEstado"><option>Pendiente</option><option>Pagado</option><option>Vencido</option></select></div>
+        <div class="fgr"><label>Fecha de pago</label><input type="date" id="pagoFechaPago"/></div>
+        <div class="fgr"><label>Notas</label><textarea id="pagoNotas" rows="2"></textarea></div>
+      </div>
+      <div class="mfooter"><button class="btn btn-s" onclick="closeOv('ovPago')">Cancelar</button><button class="btn btn-p" onclick="savePago()">💾 Guardar</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKLIST FORM -->
+<div class="ov" id="ovChecklist">
+  <div class="modal wide">
+    <div class="mhdr"><h2>✅ Checklist de Entrega</h2><button class="mcls" onclick="closeOv('ovChecklist')">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="clId"/>
+      <div class="fg" style="margin-bottom:1rem">
+        <div class="fgr"><label>Propiedad *</label><select id="clProp" onchange="autoFillChecklist()"><option value="">Seleccionar…</option></select></div>
+        <div class="fgr"><label>Inquilino</label><select id="clTen"><option value="">Seleccionar…</option></select></div>
+        <div class="fgr"><label>Fecha</label><input type="date" id="clFecha"/></div>
+        <div class="fgr"><label>Tipo</label><select id="clTipo"><option>Entrega de llaves</option><option>Devolución</option></select></div>
+        <div class="fgr full"><label>Dirección / Inmueble</label><input type="text" id="clDomicilio"/></div>
+        <div class="fgr"><label>Manzana</label><input type="text" id="clManzana"/></div>
+        <div class="fgr"><label>Lote</label><input type="text" id="clLote"/></div>
+      </div>
+      <div id="checklistFormItems"></div>
+      <div class="mfooter">
+        <button class="btn btn-s" onclick="closeOv('ovChecklist')">Cancelar</button>
+        <button class="btn btn-i" onclick="previewChecklist()">👁 Preview PDF</button>
+        <button class="btn btn-p" onclick="saveChecklist()">💾 Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FACTURA PREVIEW -->
+<div class="ov" id="ovFactura">
+  <div class="modal narrow">
+    <div class="mhdr"><h2>🧾 Factura mensual</h2><button class="mcls" onclick="closeOv('ovFactura')">✕</button></div>
+    <div class="mbody" id="facturaContent"></div>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD -->
+<div class="conf-ov" id="ovCp">
+  <div class="conf-box" style="text-align:left;max-width:400px">
+    <h3 style="margin-bottom:1rem">🔑 Cambiar contraseña</h3>
+    <div id="cpErr" style="color:var(--danger);font-size:.8rem;margin-bottom:.7rem;display:none"></div>
+    <div style="display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.2rem">
+      <div><label style="font-size:.72rem;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.28rem">Nueva contraseña</label><input type="password" id="cpP1" style="width:100%;padding:.56rem .8rem;border:1.5px solid #dde;border-radius:8px;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--gl)"/></div>
+      <div><label style="font-size:.72rem;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.28rem">Repetir contraseña</label><input type="password" id="cpP2" style="width:100%;padding:.56rem .8rem;border:1.5px solid #dde;border-radius:8px;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--gl)"/></div>
+    </div>
+    <div class="conf-btns"><button class="btn btn-s" onclick="closeCp()">Cancelar</button><button class="btn btn-p" onclick="saveCp()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="conf-ov" id="ovConf">
+  <div class="conf-box">
+    <h3>⚠️ Confirmar</h3>
+    <p id="confMsg"></p>
+    <div class="conf-btns"><button class="btn btn-s" onclick="closeConf()">Cancelar</button><button class="btn btn-d" id="confOk">Confirmar</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- SCRIPTS -->
+<script src="../firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+// ── LOGO ─────────────────────────────────────────────────────────────────
+const LOGO_B64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gIoSUNDX1BST0ZJTEUAAQEAAAIYAAAAAAQwAABtbnRyUkdCIFhZWiAAAAAAAAAAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAAHRyWFlaAAABZAAAABRnWFlaAAABeAAAABRiWFlaAAABjAAAABRyVFJDAAABoAAAAChnVFJDAAABoAAAAChiVFJDAAABoAAAACh3dHB0AAAByAAAABRjcHJ0AAAB3AAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAFgAAAAcAHMAUgBHAEIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFhZWiAAAAAAAABvogAAOPUAAAOQWFlaIAAAAAAAAGKZAAC3hQAAGNpYWVogAAAAAAAAJKAAAA+EAAC2z3BhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABYWVogAAAAAAAA9tYAAQAAAADTLW1sdWMAAAAAAAAAAQAAAAxlblVTAAAAIAAAABwARwBvAG8AZwBsAGUAIABJAG4AYwAuACAAMgAwADEANv/bAEMACAYGBwYFCAcHBwkJCAoMFA0MCwsMGRITDxQdGh8eHRocHCAkLicgIiwjHBwoNyksMDE0NDQfJzk9ODI8LjM0Mv/bAEMBCQkJDAsMGA0NGDIhHCEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMv/AABEIAhkCGQMBIgACEQEDEQH/xAAcAAEAAQUBAQAAAAAAAAAAAAAABwEEBQYIAwL/xABQEAABAwMBBAQICQkFBQkAAAAAAQIDBAURBgcSITFBUWGBExQiMnGRobEIFTZCUmJygsEWIzNzkqKywtEkQ1V0kyU0NVPhF0Rjg4WUo8Pw/8QAGgEBAAMBAQEAAAAAAAAAAAAAAAECBAMFBv/EACcRAQACAgAGAgICAwAAAAAAAAABAgMRBAUSMTNxMkEhUSI0QlJh/9oADAMBAAIRAxEAPwCfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/Z";
+document.getElementById('loginLogo').src = LOGO_B64;
+document.getElementById('sbLogo').src = LOGO_B64;
+
+// ── FIREBASE ──────────────────────────────────────────────────────────────
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+const CLD_CLOUD  = 'ddhhorkfe';
+const CLD_PRESET = 'puntoar_uploads';
+const CLD_URL    = `https://api.cloudinary.com/v1_1/${CLD_CLOUD}`;
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let owners=[], props=[], tenants=[], contratos=[], pagos=[], checklists=[], ipcHistory=[];
+let mediaFiles=[], ctPdfFile=null;
+let editingId={owner:null,prop:null,tenant:null,contrato:null,pago:null,checklist:null};
+
+// ── AUTH ──────────────────────────────────────────────────────────────────
+auth.onAuthStateChanged(u=>{
+  if(u){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appShell').style.display='block';
+    document.getElementById('sbUser').textContent=u.email;
+    initListeners();
+  } else {
+    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('appShell').style.display='none';
+  }
+});
+async function doLogin(){
+  const email=document.getElementById('liEmail').value.trim();
+  const pass=document.getElementById('liPass').value;
+  const btn=document.getElementById('btnLogin');
+  if(!email||!pass){showLErr('Completá email y contraseña.');return;}
+  document.getElementById('lerr').classList.remove('show');
+  btn.classList.add('ld');btn.disabled=true;
+  try{await auth.signInWithEmailAndPassword(email,pass);}
+  catch(e){const m={'auth/wrong-password':'Contraseña incorrecta.','auth/user-not-found':'Email no registrado.','auth/invalid-credential':'Credenciales inválidas.','auth/api-key-not-valid.-please-pass-a-valid-api-key.':'API Key inválida. Revisá firebase-config.js'};showLErr(m[e.code]||e.message);btn.classList.remove('ld');btn.disabled=false;}
+}
+function showLErr(m){document.getElementById('lerrTxt').textContent=m;document.getElementById('lerr').classList.add('show');}
+function doLogout(){auth.signOut();}
+function openCp(){document.getElementById('ovCp').classList.add('open');}
+function closeCp(){document.getElementById('ovCp').classList.remove('open');}
+async function saveCp(){
+  const p1=document.getElementById('cpP1').value,p2=document.getElementById('cpP2').value,err=document.getElementById('cpErr');
+  if(p1.length<6){err.textContent='Mínimo 6 caracteres.';err.style.display='block';return;}
+  if(p1!==p2){err.textContent='No coinciden.';err.style.display='block';return;}
+  err.style.display='none';
+  try{await auth.currentUser.updatePassword(p1);closeCp();toast('✅ Contraseña actualizada','ok');}
+  catch(e){err.textContent=e.code==='auth/requires-recent-login'?'Cerrá sesión y volvé a entrar para cambiar la contraseña.':e.message;err.style.display='block';}
+}
+
+// ── REALTIME LISTENERS ────────────────────────────────────────────────────
+function initListeners(){
+  db.collection('propietarios').orderBy('nombre').onSnapshot(s=>{owners=s.docs.map(d=>({id:d.id,...d.data()}));renderAll();updateSelects();});
+  db.collection('propiedades').orderBy('fechaAlta','desc').onSnapshot(s=>{props=s.docs.map(d=>({id:d.id,...d.data()}));renderAll();updateSelects();});
+  db.collection('inquilinos').orderBy('nombre').onSnapshot(s=>{tenants=s.docs.map(d=>({id:d.id,...d.data()}));renderAll();updateSelects();});
+  db.collection('contratos').orderBy('fechaInicio','desc').onSnapshot(s=>{contratos=s.docs.map(d=>({id:d.id,...d.data()}));renderAll();updatePagoBadge();});
+  db.collection('pagos').orderBy('mesAno','desc').onSnapshot(s=>{pagos=s.docs.map(d=>({id:d.id,...d.data()}));renderAll();updatePagoBadge();});
+  db.collection('checklists').orderBy('fecha','desc').onSnapshot(s=>{checklists=s.docs.map(d=>({id:d.id,...d.data()}));renderAll();});
+  db.collection('ipc').orderBy('fechaCarga','desc').onSnapshot(s=>{ipcHistory=s.docs.map(d=>({id:d.id,...d.data()}));renderIPC();});
+}
+
+function renderAll(){
+  renderDashboard();renderProps();renderOwners();renderTenants();renderContratos();renderPagos();renderChecklists();
+}
+
+function updatePagoBadge(){
+  const pend=pagos.filter(p=>p.estado==='Pendiente'||p.estado==='Vencido').length;
+  document.getElementById('badgePagos').textContent=pend||'';
+  document.getElementById('badgePagos').style.display=pend?'block':'none';
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────
+const PAGE_TITLES={'dashboard':'📊 Dashboard','propiedades':'🏠 Propiedades','propietarios':'👤 Propietarios','inquilinos':'🔑 Inquilinos','contratos':'📄 Contratos','pagos':'💰 Pagos','checklists':'✅ Checklists','ipc':'📈 IPC / Índices'};
+const PAGE_CTA={'propiedades':['➕ Nueva propiedad',()=>openPropForm()],'propietarios':['➕ Nuevo propietario',()=>openOwnerForm()],'inquilinos':['➕ Nuevo inquilino',()=>openTenantForm()],'contratos':['➕ Nuevo contrato',()=>openContratoForm()],'pagos':['⚡ Generar mes',()=>generarPagosDelMes()],'checklists':['➕ Nuevo checklist',()=>openChecklistForm()]};
+let curPage='dashboard';
+function nav(page){
+  curPage=page;
+  document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+  document.getElementById(`sec-${page}`).style.display='block';
+  document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('active'));
+  event?.currentTarget?.classList.add('active');
+  document.getElementById('pageTitle').textContent=PAGE_TITLES[page]||page;
+  const cta=PAGE_CTA[page];
+  const btn=document.getElementById('topbarCTA');
+  if(cta){btn.textContent=cta[0];btn.style.display='inline-flex';window._topbarAction=cta[1];}
+  else{btn.style.display='none';}
+  if(page==='ipc') renderIPC();
+  closeSidebar();
+}
+function topbarAction(){if(window._topbarAction)window._topbarAction();}
+window._topbarAction=()=>openPropForm();
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('mob-open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('mob-open');}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────
+function renderDashboard(){
+  const disp=props.filter(p=>p.estado==='Disponible').length;
+  const alq=props.filter(p=>p.estado==='Alquilado').length;
+  const pend=pagos.filter(p=>p.estado==='Pendiente'||p.estado==='Vencido').length;
+  const ctActivos=contratos.filter(c=>c.estado==='Activo').length;
+  document.getElementById('dashStats').innerHTML=`
+    <div class="sc"><div class="sc-n">${props.length}</div><div class="sc-l">Propiedades</div></div>
+    <div class="sc"><div class="sc-n">${disp}</div><div class="sc-l">Disponibles</div></div>
+    <div class="sc i"><div class="sc-n">${alq}</div><div class="sc-l">Alquiladas</div></div>
+    <div class="sc w"><div class="sc-n">${pend}</div><div class="sc-l">Pagos pendientes</div></div>
+    <div class="sc g"><div class="sc-n">${ctActivos}</div><div class="sc-l">Contratos activos</div></div>
+    <div class="sc"><div class="sc-n">${owners.length}</div><div class="sc-l">Propietarios</div></div>`;
+  // Pagos pendientes
+  const pp=pagos.filter(p=>p.estado==='Pendiente'||p.estado==='Vencido').slice(0,5);
+  document.getElementById('dashPagosPend').innerHTML=pp.length
+    ?pp.map(p=>`<div class="pago-card ${p.estado.toLowerCase()}" style="cursor:pointer" onclick="nav('pagos')">
+      <div class="pago-info"><div class="pago-mes">${p.propNombre||'—'}</div><div class="pago-det">${p.mesAno} · ${p.estado}</div></div>
+      <div class="pago-total">${fmtP(p.total)}</div></div>`).join('')
+    :'<p style="color:var(--g);font-size:.88rem">✅ Sin pagos pendientes</p>';
+  // Contratos por vencer
+  const hoy=new Date();
+  const cv=contratos.filter(c=>{
+    if(c.estado!=='Activo'||!c.fechaFin)return false;
+    const d=new Date(c.fechaFin);
+    const diff=(d-hoy)/86400000;
+    return diff>=0&&diff<=60;
+  }).slice(0,5);
+  document.getElementById('dashContratosPorVencer').innerHTML=cv.length
+    ?cv.map(c=>{const d=new Date(c.fechaFin);const diff=Math.round((d-hoy)/86400000);return`<div class="pago-card ${diff<=15?'vencido':'pendiente'}"><div class="pago-info"><div class="pago-mes">${c.propNombre||'—'}</div><div class="pago-det">Vence: ${c.fechaFin} (${diff} días)</div></div></div>`}).join('')
+    :'<p style="color:var(--g);font-size:.88rem">✅ Sin contratos por vencer próximos</p>';
+  // Últimas props
+  const lp=props.slice(0,6);
+  document.getElementById('dashProps').innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.7rem">${lp.map(p=>`
+    <div style="display:flex;align-items:center;gap:.7rem;padding:.7rem;background:var(--gl);border-radius:9px;cursor:pointer" onclick="nav('propiedades')">
+      <div style="width:44px;height:36px;border-radius:6px;background:#dde;overflow:hidden;flex-shrink:0">${p.imagenes?.length?`<img src="${p.imagenes[0]}" style="width:100%;height:100%;object-fit:cover"/>`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.1rem">${tipoIco(p.tipo)}</div>`}</div>
+      <div><div style="font-size:.83rem;font-weight:600;line-height:1.2">${p.titulo||'—'}</div><div style="font-size:.72rem;color:var(--g)">${fmtP(p.precio)}/mes</div></div>
+    </div>`).join('')}</div>`;
+}
+
+// ── PROPIEDADES ───────────────────────────────────────────────────────────
+function renderProps(){
+  const q=document.getElementById('pSearch')?.value.toLowerCase()||'';
+  const tipo=document.getElementById('pTipo')?.value||'';
+  const est=document.getElementById('pEst')?.value||'';
+  const prop=document.getElementById('pProp')?.value||'';
+  let data=props.filter(p=>{
+    if(q&&!`${p.titulo||''} ${p.barrio||''} ${p.ciudad||''}`.toLowerCase().includes(q))return false;
+    if(tipo&&p.tipo!==tipo)return false;
+    if(est&&p.estado!==est)return false;
+    if(prop&&p.propietarioId!==prop)return false;
+    return true;
+  });
+  const tbody=document.getElementById('propsBody');
+  const empty=document.getElementById('propsEmpty');
+  if(!tbody)return;
+  empty.style.display=data.length?'none':'block';
+  tbody.innerHTML=data.map(p=>{
+    const ow=owners.find(o=>o.id===p.propietarioId);
+    return`<tr>
+      <td>${p.imagenes?.length?`<img src="${p.imagenes[0]}" style="width:50px;height:40px;border-radius:6px;object-fit:cover"/>`:
+        `<div style="width:50px;height:40px;border-radius:6px;background:#e8f0e9;display:flex;align-items:center;justify-content:center;font-size:1.1rem">${tipoIco(p.tipo)}</div>`}</td>
+      <td><div class="td-main">${p.titulo||'—'}${p.destacado?' ⭐':''}</div><div class="td-sub">📍 ${p.barrio||''}, ${p.ciudad||''}</div></td>
+      <td><div style="font-size:.83rem">${ow?.nombre||'<span style="color:#ccc">Sin asignar</span>'}</div></td>
+      <td style="font-size:.82rem">${p.tipo||'—'}</td>
+      <td><strong>${fmtP(p.precio)}</strong></td>
+      <td><span class="badge ${p.estado==='Disponible'?'b-green':p.estado==='Reservado'?'b-yellow':'b-blue'}">${p.estado||'—'}</span></td>
+      <td><div class="td-acts">
+        <button class="btn btn-s btn-xs" onclick="editProp('${p.id}')">✏️</button>
+        <button class="btn btn-w btn-xs" onclick="nextEstadoProp('${p.id}')">🔄</button>
+        <button class="btn btn-d btn-xs" onclick="confirm_('¿Eliminar "${p.titulo}"?',()=>delDoc('propiedades','${p.id}'))">🗑</button>
+      </div></td></tr>`;
+  }).join('');
+}
+
+// ── PROPIETARIOS ──────────────────────────────────────────────────────────
+function renderOwners(){
+  const q=document.getElementById('owSearch')?.value.toLowerCase()||'';
+  let data=owners.filter(o=>!q||`${o.nombre||''} ${o.cuit||''} ${o.email||''}`.toLowerCase().includes(q));
+  const tbody=document.getElementById('ownersBody');
+  const empty=document.getElementById('ownersEmpty');
+  if(!tbody)return;
+  empty.style.display=data.length?'none':'block';
+  tbody.innerHTML=data.map(o=>{
+    const cnt=props.filter(p=>p.propietarioId===o.id).length;
+    return`<tr>
+      <td><div class="td-main">${o.nombre||'—'}</div><div class="td-sub">${o.iva||''}</div></td>
+      <td style="font-size:.82rem;font-family:monospace">${o.cuit||'—'}</td>
+      <td style="font-size:.82rem">${o.telefono||'—'}</td>
+      <td style="font-size:.82rem">${o.email||'—'}</td>
+      <td><div style="font-size:.78rem">${o.alias||'—'}</div><div style="font-size:.72rem;color:var(--g)">${o.banco||''}</div></td>
+      <td><span class="badge b-blue">${cnt} prop.</span></td>
+      <td><div class="td-acts">
+        <button class="btn btn-s btn-xs" onclick="editOwner('${o.id}')">✏️</button>
+        <button class="btn btn-d btn-xs" onclick="confirmDel('propietarios','${o.id}','propietario')">🗑</button>
+      </div></td></tr>`;
+  }).join('');
+}
+
+// ── INQUILINOS ────────────────────────────────────────────────────────────
+function renderTenants(){
+  const q=document.getElementById('tenSearch')?.value.toLowerCase()||'';
+  let data=tenants.filter(t=>!q||`${t.nombre||''} ${t.dni||''}`.toLowerCase().includes(q));
+  const tbody=document.getElementById('tenantsBody');
+  const empty=document.getElementById('tenantsEmpty');
+  if(!tbody)return;
+  empty.style.display=data.length?'none':'block';
+  tbody.innerHTML=data.map(t=>{
+    const ct=contratos.find(c=>c.inquilinoId===t.id&&c.estado==='Activo');
+    const pr=ct?props.find(p=>p.id===ct.propiedadId):props.find(p=>p.id===t.propiedadId)||null;
+    return`<tr>
+      <td><div class="td-main">${t.nombre||'—'}</div><div class="td-sub">${t.ocupacion||''}</div></td>
+      <td style="font-family:monospace;font-size:.82rem">${t.dni||'—'}</td>
+      <td style="font-size:.82rem">${t.telefono||'—'}</td>
+      <td style="font-size:.82rem">${t.email||'—'}</td>
+      <td style="font-size:.82rem">${pr?.titulo||t.propNombre||'<span style="color:#ccc">Sin asignar</span>'}</td>
+      <td><span class="badge ${ct?'b-green':'b-gray'}">${ct?'Con contrato':'Sin contrato'}</span></td>
+      <td><div class="td-acts">
+        <button class="btn btn-s btn-xs" onclick="editTenant('${t.id}')">✏️</button>
+        <button class="btn btn-d btn-xs" onclick="confirmDel('inquilinos','${t.id}','inquilino')">🗑</button>
+      </div></td></tr>`;
+  }).join('');
+}
+
+// ── CONTRATOS ─────────────────────────────────────────────────────────────
+function renderContratos(){
+  const q=document.getElementById('ctSearch')?.value.toLowerCase()||'';
+  const est=document.getElementById('ctEst')?.value||'';
+  let data=contratos.filter(c=>{
+    if(q&&!`${c.propNombre||''} ${c.tenNombre||''}`.toLowerCase().includes(q))return false;
+    if(est&&c.estado!==est)return false;
+    return true;
+  });
+  const tbody=document.getElementById('contratosBody');
+  const empty=document.getElementById('contratosEmpty');
+  if(!tbody)return;
+  empty.style.display=data.length?'none':'block';
+  tbody.innerHTML=data.map(c=>`<tr>
+    <td><div class="td-main">${c.propNombre||'—'}</div></td>
+    <td style="font-size:.83rem">${c.tenNombre||'—'}</td>
+    <td style="font-size:.82rem">${c.fechaInicio||'—'}</td>
+    <td style="font-size:.82rem">${c.fechaFin||'—'}</td>
+    <td><strong>${fmtP(c.valorActual||c.valorInicial)}</strong></td>
+    <td style="font-size:.82rem">${c.proximaActualizacion||'—'}</td>
+    <td><span class="badge ${c.estado==='Activo'?'b-green':c.estado==='Vencido'?'b-red':'b-gray'}">${c.estado||'—'}</span></td>
+    <td><div class="td-acts">
+      <button class="btn btn-s btn-xs" onclick="editContrato('${c.id}')">✏️</button>
+      ${c.pdfUrl?`<a href="${c.pdfUrl}" target="_blank" class="btn btn-i btn-xs">📄 PDF</a>`:''}
+      <button class="btn btn-p btn-xs" onclick="generarFactura('${c.id}')">🧾</button>
+      <button class="btn btn-d btn-xs" onclick="confirmDel('contratos','${c.id}','contrato')">🗑</button>
+    </div></td></tr>`).join('');
+}
+
+// ── PAGOS ─────────────────────────────────────────────────────────────────
+function renderPagos(){
+  const q=document.getElementById('pagoSearch')?.value.toLowerCase()||'';
+  const est=document.getElementById('pagoEst')?.value||'';
+  const mes=document.getElementById('pagoMes')?.value||'';
+  let data=pagos.filter(p=>{
+    if(q&&!`${p.propNombre||''} ${p.tenNombre||''}`.toLowerCase().includes(q))return false;
+    if(est&&p.estado!==est)return false;
+    if(mes&&p.mesAno!==mes)return false;
+    return true;
+  });
+  const c=document.getElementById('pagosContainer');
+  if(!c)return;
+  // Fill mes selector
+  const meses=[...new Set(pagos.map(p=>p.mesAno))].sort().reverse();
+  const selMes=document.getElementById('pagoMes');
+  if(selMes&&selMes.options.length<=1){
+    meses.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;selMes.appendChild(o);});
+  }
+  if(!data.length){c.innerHTML='<div class="empty-st"><span>💰</span><p>Sin pagos en este período.</p></div>';return;}
+  c.innerHTML=data.map(p=>`
+    <div class="pago-card ${p.estado==='Pagado'?'pagado':p.estado==='Vencido'?'vencido':'pendiente'}">
+      <div class="pago-info">
+        <div class="pago-mes">${p.propNombre||'—'} · ${p.mesAno}</div>
+        <div class="pago-det">
+          Inquilino: ${p.tenNombre||'—'} |
+          Alq: ${fmtP(p.alquiler)} · Agua: ${fmtP(p.agua)} · Tasa: ${fmtP(p.tasa)}${p.extra?` · Extra: ${fmtP(p.extra)}`:''}
+          ${p.fechaPago?` | Pagado: ${p.fechaPago}`:''}
+        </div>
+      </div>
+      <div class="pago-total">${fmtP(p.total)}</div>
+      <div class="pago-acts">
+        <span class="badge ${p.estado==='Pagado'?'b-green':p.estado==='Vencido'?'b-red':'b-yellow'}">${p.estado}</span>
+        ${p.estado!=='Pagado'?`<button class="btn btn-p btn-xs" onclick="marcarPagado('${p.id}')">✅ Pagado</button>`:''}
+        <button class="btn btn-i btn-xs" onclick="generarFacturaPago('${p.id}')">🧾</button>
+        <button class="btn btn-s btn-xs" onclick="editPago('${p.id}')">✏️</button>
+        <button class="btn btn-d btn-xs" onclick="confirmDel('pagos','${p.id}','pago')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── CHECKLISTS ────────────────────────────────────────────────────────────
+function autoFillChecklist(){
+  const propId=document.getElementById('clProp').value;
+  if(!propId)return;
+  const p=props.find(x=>x.id===propId);
+  if(!p)return;
+  // Auto-fill address
+  if(p.direccion) document.getElementById('clDomicilio').value=p.direccion;
+  // Auto-fill tenant from active contract
+  const ct=contratos.find(c=>c.propiedadId===propId&&c.estado==='Activo');
+  if(ct&&document.getElementById('clTen')) document.getElementById('clTen').value=ct.inquilinoId||'';
+}
+
+function renderChecklists(){
+  const q=document.getElementById('clSearch')?.value.toLowerCase()||'';
+  let data=checklists.filter(c=>!q||`${c.propNombre||''} ${c.tenNombre||''}`.toLowerCase().includes(q));
+  const tbody=document.getElementById('checklistsBody');
+  const empty=document.getElementById('checklistsEmpty');
+  if(!tbody)return;
+  empty.style.display=data.length?'none':'block';
+  tbody.innerHTML=data.map(c=>`<tr>
+    <td><div class="td-main">${c.propNombre||'—'}</div></td>
+    <td style="font-size:.83rem">${c.tenNombre||'—'}</td>
+    <td style="font-size:.82rem">${c.fecha||'—'}</td>
+    <td><span class="badge b-blue">${c.tipo||'—'}</span></td>
+    <td><span class="badge ${c.firmado?'b-green':'b-yellow'}">${c.firmado?'Firmado':'Pendiente'}</span></td>
+    <td><div class="td-acts">
+      <button class="btn btn-i btn-xs" onclick="editChecklist('${c.id}')">👁 Ver</button>
+      <button class="btn btn-d btn-xs" onclick="confirmDel('checklists','${c.id}','checklist')">🗑</button>
+    </div></td></tr>`).join('');
+}
+
+// ── IPC ───────────────────────────────────────────────────────────────────
+function renderIPC(){
+  if(!ipcHistory.length){document.getElementById('ipcValor').textContent='—';document.getElementById('ipcPeriodo').textContent='Sin datos.';return;}
+  const ultimo=ipcHistory[0];
+  document.getElementById('ipcValor').textContent=`+${ultimo.variacion}%`;
+  document.getElementById('ipcPeriodo').textContent=`Período: ${ultimo.periodo} · Cargado: ${ultimo.fechaCarga?.split('T')[0]}`;
+  // Contratos a actualizar
+  const hoy=new Date();
+  const porActualizar=contratos.filter(c=>c.estado==='Activo'&&c.proximaActualizacion&&new Date(c.proximaActualizacion)<=hoy);
+  document.getElementById('ipcContratos').innerHTML=porActualizar.length
+    ?porActualizar.map(c=>`<div class="pago-card vencido" style="margin-bottom:.5rem">
+        <div class="pago-info"><div class="pago-mes">${c.propNombre||'—'}</div>
+        <div class="pago-det">Actual: ${fmtP(c.valorActual||c.valorInicial)} → Nuevo: ${fmtP(Math.round((c.valorActual||c.valorInicial)*(1+ultimo.variacion/100)))}</div></div>
+        <button class="btn btn-p btn-xs" onclick="aplicarIPC('${c.id}')">Aplicar</button></div>`).join('')
+    :'<p style="color:var(--g);font-size:.88rem">✅ Todos los contratos están al día.</p>';
+  // Historial
+  document.getElementById('ipcHistorial').innerHTML=ipcHistory.map(i=>`<tr>
+    <td>${i.periodo}</td><td><strong>+${i.variacion}%</strong></td>
+    <td>${i.fechaCarga?.split('T')[0]||'—'}</td>
+    <td>${i.contratosActualizados||0}</td></tr>`).join('');
+}
+
+async function guardarIPC(){
+  const per=document.getElementById('ipcPer').value.trim();
+  const pct=parseFloat(document.getElementById('ipcPct').value);
+  if(!per||isNaN(pct)){toast('⚠️ Completá período y variación','err');return;}
+  try{
+    await db.collection('ipc').add({periodo:per,variacion:pct,fechaCarga:new Date().toISOString(),contratosActualizados:0});
+    toast('✅ IPC guardado','ok');
+    document.getElementById('ipcPer').value='';
+    document.getElementById('ipcPct').value='';
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+async function aplicarIPC(contratoId){
+  if(!ipcHistory.length){toast('⚠️ No hay IPC cargado','err');return;}
+  const ultimo=ipcHistory[0];
+  const ct=contratos.find(c=>c.id===contratoId);
+  if(!ct)return;
+  const nuevo=Math.round((ct.valorActual||ct.valorInicial)*(1+ultimo.variacion/100));
+  const proxFecha=new Date(ct.proximaActualizacion||new Date());
+  proxFecha.setMonth(proxFecha.getMonth()+parseInt(ct.periodoActualizacion||3));
+  try{
+    await db.collection('contratos').doc(contratoId).update({valorActual:nuevo,proximaActualizacion:proxFecha.toISOString().split('T')[0],updatedAt:new Date().toISOString()});
+    // Actualizar contador en IPC
+    await db.collection('ipc').doc(ultimo.id).update({contratosActualizados:firebase.firestore.FieldValue.increment(1)});
+    toast(`✅ Alquiler actualizado a ${fmtP(nuevo)}`, 'ok');
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+async function aplicarIPCTodos(){
+  const hoy=new Date();
+  const porActualizar=contratos.filter(c=>c.estado==='Activo'&&c.proximaActualizacion&&new Date(c.proximaActualizacion)<=hoy);
+  if(!porActualizar.length){toast('✅ No hay contratos para actualizar','info');return;}
+  for(const c of porActualizar) await aplicarIPC(c.id);
+  toast(`✅ ${porActualizar.length} contratos actualizados`,'ok');
+}
+
+// ── OWNER FORM ────────────────────────────────────────────────────────────
+function openOwnerForm(id){
+  editingId.owner=id||null;
+  clearFields(['owId','owNombre','owCuit','owTel','owEmail','owDir','owCbu','owAlias','owBanco','owCuenta','owNotas']);
+  document.getElementById('ownerFormTitle').textContent=id?'✏️ Editar Propietario':'👤 Nuevo Propietario';
+  if(id){const o=owners.find(x=>x.id===id);if(!o)return;
+    setFields({owId:o.id,owNombre:o.nombre,owCuit:o.cuit,owTel:o.telefono,owEmail:o.email,owDir:o.direccion,owCbu:o.cbu,owAlias:o.alias,owBanco:o.banco,owCuenta:o.cuenta,owNotas:o.notas});
+    document.getElementById('owIva').value=o.iva||'Responsable Inscripto';
+  }
+  openOv('ovOwner');
+}
+function editOwner(id){openOwnerForm(id);}
+async function saveOwner(){
+  const nombre=document.getElementById('owNombre').value.trim();
+  if(!nombre){toast('⚠️ El nombre es obligatorio','err');return;}
+  const data={nombre,cuit:v('owCuit'),iva:document.getElementById('owIva').value,telefono:v('owTel'),email:v('owEmail'),direccion:v('owDir'),cbu:v('owCbu'),alias:v('owAlias'),banco:v('owBanco'),cuenta:v('owCuenta'),notas:v('owNotas'),updatedAt:new Date().toISOString()};
+  try{
+    if(editingId.owner) await db.collection('propietarios').doc(editingId.owner).set(data,{merge:true});
+    else{data.fechaAlta=new Date().toISOString();await db.collection('propietarios').add(data);}
+    closeOv('ovOwner');toast('✅ Propietario guardado','ok');
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+// ── PROP FORM ─────────────────────────────────────────────────────────────
+function openPropForm(id){
+  editingId.prop=id||null;mediaFiles=[];
+  document.getElementById('mediaPrev').innerHTML='';
+  clearFields(['prId','prTit','prDesc','prDir','prBa','prM2','prAmb','prDorm','prBan','prPre','prC1','prC2','prInf']);
+  document.getElementById('prCi').value='Córdoba';
+  document.getElementById('prDest').checked=false;
+  buildList('dlCond',['']);buildList('dlReq',['']);
+  document.getElementById('propFormTitle').textContent=id?'✏️ Editar Propiedad':'🏠 Nueva Propiedad';
+  if(id){const p=props.find(x=>x.id===id);if(!p)return;
+    setFields({prId:p.id,prTit:p.titulo,prDesc:p.descripcion,prDir:p.direccion,prBa:p.barrio,prCi:p.ciudad||'Córdoba',prM2:p.superficieM2,prAmb:p.ambientes,prDorm:p.dormitorios,prBan:p.banos,prPre:p.precio,prC1:p.gastos?.contrato1anio,prC2:p.gastos?.contrato2anios,prInf:p.gastos?.informes});
+    document.getElementById('prTipo').value=p.tipo||'Departamento';
+    document.getElementById('prEst').value=p.estado||'Disponible';
+    document.getElementById('prProp').value=p.propietarioId||'';
+    document.getElementById('prDest').checked=!!p.destacado;
+    buildList('dlCond',p.condiciones||['']);buildList('dlReq',p.requisitos||['']);
+    (p.imagenes||[]).forEach(url=>mediaFiles.push({url,file:null,type:'image'}));
+    (p.videos||[]).forEach(url=>mediaFiles.push({url,file:null,type:'video'}));
+    renderMediaPrev();
+  }
+  switchTabTo('prop','info');
+  openOv('ovProp');
+}
+function editProp(id){openPropForm(id);}
+async function saveProp(){
+  const titulo=document.getElementById('prTit').value.trim();
+  const precio=+document.getElementById('prPre').value;
+  if(!titulo){toast('⚠️ El título es obligatorio','err');return;}
+  const btn=document.getElementById('btnSaveProp');
+  btn.disabled=true;btn.textContent='⏳ Guardando…';
+  try{
+    const imgUrls=[],vidUrls=[];
+    for(const m of mediaFiles){
+      if(m.url&&!m.file){m.type==='video'?vidUrls.push(m.url):imgUrls.push(m.url);continue;}
+      if(!m.file)continue;
+      const isVid=m.type==='video';
+      const endpoint=isVid
+        ?`https://api.cloudinary.com/v1_1/${CLD_CLOUD}/video/upload`
+        :`https://api.cloudinary.com/v1_1/${CLD_CLOUD}/image/upload`;
+      const fd=new FormData();
+      fd.append('file',m.file);
+      fd.append('upload_preset',CLD_PRESET);
+      fd.append('folder','propiedades');
+      toast(`⏳ Subiendo ${isVid?'video':'foto'}…`,'info');
+      const res=await fetch(endpoint,{method:'POST',body:fd});
+      const data=await res.json();
+      if(!res.ok)throw new Error(data.error?.message||`Error subiendo ${isVid?'video':'foto'}`);
+      isVid?vidUrls.push(data.secure_url):imgUrls.push(data.secure_url);
+    }
+    const data={titulo,tipo:document.getElementById('prTipo').value,estado:document.getElementById('prEst').value,
+      propietarioId:document.getElementById('prProp').value||null,
+      propietarioNombre:owners.find(o=>o.id===document.getElementById('prProp').value)?.nombre||null,
+      descripcion:v('prDesc'),destacado:document.getElementById('prDest').checked,
+      direccion:v('prDir'),barrio:v('prBa'),ciudad:v('prCi')||'Córdoba',
+      superficieM2:+v('prM2')||0,ambientes:+v('prAmb')||0,dormitorios:+v('prDorm')||0,banos:+v('prBan')||0,
+      precio:precio||0,gastos:{contrato1anio:+v('prC1')||0,contrato2anios:+v('prC2')||0,informes:+v('prInf')||0},
+      condiciones:getList('dlCond'),requisitos:getList('dlReq'),
+      imagenes:imgUrls,videos:vidUrls,updatedAt:new Date().toISOString()};
+    if(editingId.prop) await db.collection('propiedades').doc(editingId.prop).set(data,{merge:true});
+    else{data.fechaAlta=new Date().toISOString();await db.collection('propiedades').add(data);}
+    closeOv('ovProp');toast('✅ Propiedad guardada','ok');
+  }catch(e){toast('❌ '+e.message,'err');}
+  finally{btn.disabled=false;btn.textContent='💾 Guardar';}
+}
+
+const ESTADOS_PROP=['Disponible','Reservado','Alquilado'];
+async function nextEstadoProp(id){
+  const p=props.find(x=>x.id===id);if(!p)return;
+  const next=ESTADOS_PROP[(ESTADOS_PROP.indexOf(p.estado)+1)%ESTADOS_PROP.length];
+  await db.collection('propiedades').doc(id).update({estado:next,updatedAt:new Date().toISOString()});
+  toast(`🔄 Estado → ${next}`,'ok');
+}
+
+// ── TENANT FORM ───────────────────────────────────────────────────────────
+function openTenantForm(id){
+  editingId.tenant=id||null;
+  clearFields(['tenId','tenNombre','tenDni','tenTel','tenEmail','tenOcup','tenSueldo','tenDir','tenNotas','g1Nombre','g1Dni','g1Tel','g1Sueldo','g2Nombre','g2Dni','g2Tel','g2Sueldo']);
+  document.getElementById('tenPropId').value='';
+  document.getElementById('tenantFormTitle').textContent=id?'✏️ Editar Inquilino':'🔑 Nuevo Inquilino';
+  if(id){const t=tenants.find(x=>x.id===id);if(!t)return;
+    document.getElementById('tenPropId').value=t.propiedadId||'';
+    setFields({tenId:t.id,tenNombre:t.nombre,tenDni:t.dni,tenTel:t.telefono,tenEmail:t.email,tenOcup:t.ocupacion,tenSueldo:t.sueldo,tenDir:t.direccion,tenNotas:t.notas,
+      g1Nombre:t.garante1?.nombre,g1Dni:t.garante1?.dni,g1Tel:t.garante1?.telefono,g1Sueldo:t.garante1?.sueldo,
+      g2Nombre:t.garante2?.nombre,g2Dni:t.garante2?.dni,g2Tel:t.garante2?.telefono,g2Sueldo:t.garante2?.sueldo});
+  }
+  openOv('ovTenant');
+}
+function editTenant(id){openTenantForm(id);}
+async function saveTenant(){
+  const nombre=document.getElementById('tenNombre').value.trim();
+  if(!nombre){toast('⚠️ El nombre es obligatorio','err');return;}
+  const propIdTen=document.getElementById('tenPropId').value||null;
+  const propTen=props.find(p=>p.id===propIdTen);
+  const data={nombre,propiedadId:propIdTen||null,propNombre:propTen?.titulo||null,dni:v('tenDni'),telefono:v('tenTel'),email:v('tenEmail'),ocupacion:v('tenOcup'),sueldo:+v('tenSueldo')||0,direccion:v('tenDir'),notas:v('tenNotas'),
+    garante1:{nombre:v('g1Nombre'),dni:v('g1Dni'),telefono:v('g1Tel'),sueldo:+v('g1Sueldo')||0},
+    garante2:{nombre:v('g2Nombre'),dni:v('g2Dni'),telefono:v('g2Tel'),sueldo:+v('g2Sueldo')||0},
+    updatedAt:new Date().toISOString()};
+  try{
+    if(editingId.tenant) await db.collection('inquilinos').doc(editingId.tenant).set(data,{merge:true});
+    else{data.fechaAlta=new Date().toISOString();await db.collection('inquilinos').add(data);}
+    closeOv('ovTenant');toast('✅ Inquilino guardado','ok');
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+// ── CONTRATO FORM ─────────────────────────────────────────────────────────
+function openContratoForm(id){
+  editingId.contrato=id||null;ctPdfFile=null;
+  clearFields(['ctId','ctIni','ctFin','ctValorIni','ctValorAct','ctProxAct','ctEcogas','ctCoopElec','ctNotas']);
+  document.getElementById('ctPdfName').textContent='';
+  document.getElementById('contratoFormTitle').textContent=id?'✏️ Editar Contrato':'📄 Nuevo Contrato';
+  // Populate selects fresh with current data
+  const ctPropEl=document.getElementById('ctProp');
+  ctPropEl.innerHTML='<option value="">Seleccionar propiedad…</option>'+props.map(p=>`<option value="${p.id}">${p.titulo} – ${p.barrio||''}</option>`).join('');
+  const ctTenEl=document.getElementById('ctTen');
+  ctTenEl.innerHTML='<option value="">Seleccionar inquilino…</option>'+tenants.map(t=>`<option value="${t.id}">${t.nombre} ${t.dni?'(DNI '+t.dni+')':''}</option>`).join('');
+  if(id){const c=contratos.find(x=>x.id===id);if(!c)return;
+    setFields({ctId:c.id,ctIni:c.fechaInicio,ctFin:c.fechaFin,ctValorIni:c.valorInicial,ctValorAct:c.valorActual,ctProxAct:c.proximaActualizacion,ctEcogas:c.ctaEcogas,ctCoopElec:c.ctaCoopElec,ctNotas:c.notas});
+    document.getElementById('ctProp').value=c.propiedadId||'';
+    document.getElementById('ctTen').value=c.inquilinoId||'';
+    document.getElementById('ctPeriodo').value=c.periodoActualizacion||'3';
+    document.getElementById('ctEst2').value=c.estado||'Activo';
+    if(c.pdfUrl) document.getElementById('ctPdfName').textContent='📄 PDF ya cargado';
+  }
+  openOv('ovContrato');
+}
+function editContrato(id){openContratoForm(id);}
+function handleCtPdf(e){ctPdfFile=e.target.files[0];document.getElementById('ctPdfName').textContent=`📄 ${ctPdfFile.name}`;}
+async function saveContrato(){
+  const propId=document.getElementById('ctProp').value;
+  const tenId=document.getElementById('ctTen').value;
+  const ini=document.getElementById('ctIni').value;
+  const fin=document.getElementById('ctFin').value;
+  const valIni=+document.getElementById('ctValorIni').value;
+  if(!propId||!tenId||!ini||!fin||!valIni){toast('⚠️ Completá los campos obligatorios','err');return;}
+  const pr=props.find(p=>p.id===propId);
+  const te=tenants.find(t=>t.id===tenId);
+  let pdfUrl=contratos.find(c=>c.id===editingId.contrato)?.pdfUrl||null;
+  if(ctPdfFile){
+    const fd=new FormData();fd.append('file',ctPdfFile);fd.append('upload_preset',CLD_PRESET);fd.append('folder','contratos');fd.append('resource_type','raw');
+    const res=await fetch(`${CLD_URL}/raw`,{method:'POST',body:fd});
+    const data=await res.json();
+    if(res.ok) pdfUrl=data.secure_url;
+  }
+  const data={propiedadId:propId,propNombre:pr?.titulo||'',inquilinoId:tenId,tenNombre:te?.nombre||'',
+    fechaInicio:ini,fechaFin:fin,valorInicial:valIni,valorActual:+v('ctValorAct')||valIni,
+    periodoActualizacion:+document.getElementById('ctPeriodo').value||3,
+    proximaActualizacion:v('ctProxAct')||null,ctaEcogas:v('ctEcogas'),ctaCoopElec:v('ctCoopElec'),
+    estado:document.getElementById('ctEst2').value,notas:v('ctNotas'),pdfUrl,updatedAt:new Date().toISOString()};
+  try{
+    if(editingId.contrato) await db.collection('contratos').doc(editingId.contrato).set(data,{merge:true});
+    else{data.fechaAlta=new Date().toISOString();await db.collection('contratos').add(data);
+      // Marcar propiedad como alquilada
+      await db.collection('propiedades').doc(propId).update({estado:'Alquilado'});}
+    closeOv('ovContrato');toast('✅ Contrato guardado','ok');
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+// ── PAGOS ─────────────────────────────────────────────────────────────────
+function openPagoForm(id){
+  editingId.pago=id||null;
+  clearFields(['pagoId','pagoAlq','pagoAgua','pagoTasa','pagoExtra','pagoExtraDet','pagoFechaPago','pagoNotas']);
+  document.getElementById('pagoFormTitle').textContent=id?'✏️ Editar Pago':'💰 Nuevo Pago';
+  const hoy=new Date();
+  document.getElementById('pagoMesAno').value=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}`;
+  // Populate contrato select fresh
+  const pagoCtEl=document.getElementById('pagoContrato');
+  pagoCtEl.innerHTML='<option value="">Seleccionar contrato…</option>'+contratos.filter(c=>c.estado==='Activo').map(c=>`<option value="${c.id}">${c.propNombre} – ${c.tenNombre}</option>`).join('');
+  // Auto-fill alquiler when contrato selected
+  pagoCtEl.onchange=function(){
+    const ct=contratos.find(x=>x.id===this.value);
+    if(ct){document.getElementById('pagoAlq').value=ct.valorActual||ct.valorInicial||'';}
+  };
+  if(id){const p=pagos.find(x=>x.id===id);if(!p)return;
+    setFields({pagoId:p.id,pagoAlq:p.alquiler,pagoAgua:p.agua,pagoTasa:p.tasa,pagoExtra:p.extra,pagoExtraDet:p.extraDetalle,pagoFechaPago:p.fechaPago,pagoNotas:p.notas});
+    document.getElementById('pagoContrato').value=p.contratoId||'';
+    document.getElementById('pagoMesAno').value=p.mesAno||'';
+    document.getElementById('pagoEstado').value=p.estado||'Pendiente';
+  }
+  openOv('ovPago');
+}
+function editPago(id){openPagoForm(id);}
+async function savePago(){
+  const ctId=document.getElementById('pagoContrato').value;
+  const mesAno=document.getElementById('pagoMesAno').value;
+  if(!ctId||!mesAno){toast('⚠️ Seleccioná contrato y mes','err');return;}
+  const ct=contratos.find(c=>c.id===ctId);
+  const alq=+v('pagoAlq')||0,agua=+v('pagoAgua')||0,tasa=+v('pagoTasa')||0,extra=+v('pagoExtra')||0;
+  const data={contratoId:ctId,propNombre:ct?.propNombre||'',tenNombre:ct?.tenNombre||'',
+    mesAno,alquiler:alq,agua,tasa,extra,extraDetalle:v('pagoExtraDet'),
+    total:alq+agua+tasa+extra,estado:document.getElementById('pagoEstado').value,
+    fechaPago:v('pagoFechaPago')||null,notas:v('pagoNotas'),updatedAt:new Date().toISOString()};
+  try{
+    if(editingId.pago) await db.collection('pagos').doc(editingId.pago).set(data,{merge:true});
+    else{data.fechaAlta=new Date().toISOString();await db.collection('pagos').add(data);}
+    closeOv('ovPago');toast('✅ Pago guardado','ok');
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+async function marcarPagado(id){
+  const hoy=new Date().toISOString().split('T')[0];
+  await db.collection('pagos').doc(id).update({estado:'Pagado',fechaPago:hoy,updatedAt:new Date().toISOString()});
+  toast('✅ Pago registrado','ok');
+}
+
+async function generarPagosDelMes(){
+  const hoy=new Date();
+  const mesAno=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}`;
+  const ctActivos=contratos.filter(c=>c.estado==='Activo');
+  let creados=0;
+  for(const ct of ctActivos){
+    const existe=pagos.find(p=>p.contratoId===ct.id&&p.mesAno===mesAno);
+    if(existe)continue;
+    await db.collection('pagos').add({contratoId:ct.id,propNombre:ct.propNombre,tenNombre:ct.tenNombre,
+      mesAno,alquiler:ct.valorActual||ct.valorInicial,agua:0,tasa:0,extra:0,total:ct.valorActual||ct.valorInicial,
+      estado:'Pendiente',fechaAlta:new Date().toISOString(),updatedAt:new Date().toISOString()});
+    creados++;
+  }
+  toast(creados?`✅ ${creados} pagos generados para ${mesAno}`:`ℹ️ Ya existen pagos para ${mesAno}`,'ok');
+}
+
+// ── FACTURA ───────────────────────────────────────────────────────────────
+function generarFactura(contratoId){
+  const ct=contratos.find(c=>c.id===contratoId);
+  if(!ct)return;
+  const p=pagos.find(x=>x.contratoId===contratoId&&x.estado!=='Pagado')||pagos.find(x=>x.contratoId===contratoId);
+  const pr=props.find(x=>x.id===ct.propiedadId);
+  const ow=owners.find(o=>o.id===pr?.propietarioId);
+  mostrarFactura(ct,p,pr,ow);
+}
+function generarFacturaPago(pagoId){
+  const p=pagos.find(x=>x.id===pagoId);if(!p)return;
+  const ct=contratos.find(c=>c.id===p.contratoId);
+  const pr=ct?props.find(x=>x.id===ct.propiedadId):null;
+  const ow=pr?owners.find(o=>o.id===pr.propietarioId):null;
+  mostrarFactura(ct,p,pr,ow);
+}
+function mostrarFactura(ct,p,pr,ow){
+  const hoy=new Date().toLocaleDateString('es-AR');
+  const alq=p?.alquiler||ct?.valorActual||ct?.valorInicial||0;
+  const agua=p?.agua||0;const tasa=p?.tasa||0;const extra=p?.extra||0;
+  const total=alq+agua+tasa+extra;
+  const mes=p?.mesAno||`${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`;
+  const venc=new Date();venc.setDate(8);
+  document.getElementById('facturaContent').innerHTML=`
+    <div style="font-family:'DM Sans',sans-serif;max-width:480px;margin:0 auto">
+      <div style="text-align:center;border-bottom:2px solid #4aaa5a;padding-bottom:.8rem;margin-bottom:1rem">
+        <img src="${LOGO_B64}" style="height:40px;object-fit:contain;margin-bottom:.4rem"/>
+        <div style="font-size:.72rem;color:#666;text-transform:uppercase;letter-spacing:.08em">${ow?.nombre||'PuntoAr Obras Civiles'}</div>
+        <div style="font-size:.7rem;color:#999">${ow?.direccion||''} ${ow?.iva?'· '+ow.iva:''}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:1rem;font-size:.82rem">
+        <div><strong>CLIENTE:</strong> ${ct?.tenNombre||'—'}</div>
+        <div><strong>FECHA:</strong> ${hoy}</div>
+        <div style="grid-column:1/-1"><strong>PROPIEDAD:</strong> ${pr?.direccion||pr?.titulo||'—'}</div>
+        <div><strong>PERÍODO:</strong> ${mes}</div>
+        <div><strong>VENCIMIENTO:</strong> ${venc.toLocaleDateString('es-AR')}</div>
+        ${ct?.ctaEcogas?`<div><strong>Cta. Ecogas:</strong> ${ct.ctaEcogas}</div>`:''}
+        ${ct?.ctaCoopElec?`<div><strong>Cta. Coop. Eléct.:</strong> ${ct.ctaCoopElec}</div>`:''}
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:.85rem">
+        <thead><tr style="background:#f4f5f4"><th style="padding:.5rem .7rem;text-align:left">CONCEPTO</th><th style="padding:.5rem .7rem;text-align:right">AÑO</th><th style="padding:.5rem .7rem;text-align:right">IMPORTE</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:.45rem .7rem">Alquiler</td><td style="padding:.45rem .7rem;text-align:right">${new Date().getFullYear()}</td><td style="padding:.45rem .7rem;text-align:right">${fmtP(alq)}</td></tr>
+          ${agua?`<tr><td style="padding:.45rem .7rem">Agua</td><td></td><td style="padding:.45rem .7rem;text-align:right">${agua<0?'-':''}${fmtP(Math.abs(agua))}</td></tr>`:''}
+          ${tasa?`<tr><td style="padding:.45rem .7rem">Tasa a la propiedad</td><td></td><td style="padding:.45rem .7rem;text-align:right">${fmtP(tasa)}</td></tr>`:''}
+          ${extra?`<tr><td style="padding:.45rem .7rem">${p?.extraDetalle||'Extra'}</td><td></td><td style="padding:.45rem .7rem;text-align:right">${fmtP(extra)}</td></tr>`:''}
+          <tr style="background:#f4f5f4;font-weight:700"><td style="padding:.5rem .7rem" colspan="2">TOTAL</td><td style="padding:.5rem .7rem;text-align:right;font-size:1.05rem">${fmtP(total)}</td></tr>
+        </tbody>
+      </table>
+      ${ow?.banco?`<div style="background:#e8f5eb;border-radius:8px;padding:.75rem 1rem;font-size:.8rem;margin-bottom:.8rem">
+        <strong>${ow.banco}</strong> · ALIAS: <strong>${ow.alias||'—'}</strong><br/>
+        CBU: ${ow.cbu||'—'} · Cta: ${ow.cuenta||'—'}<br/>
+        Titular: ${ow.nombre} · CUIT: ${ow.cuit||'—'}
+      </div>`:''}
+      <div style="font-size:.72rem;color:#999;border-top:1px solid #eee;padding-top:.7rem;line-height:1.5">
+        Según contrato – Cláusula Cuarta MORA DE PAGO: en caso de no abonar en término se cobrará 2% diario desde el día 1° de mora.<br/>
+        <em>Documento no válido como Factura</em>
+      </div>
+    </div>
+    <div style="display:flex;gap:.7rem;margin-top:1.2rem;justify-content:flex-end">
+      <button class="btn btn-p" onclick="printFactura()">🖨️ Imprimir / PDF</button>
+    </div>`;
+  openOv('ovFactura');
+}
+function printFactura(){window.print();}
+
+// ── CHECKLIST ─────────────────────────────────────────────────────────────
+const CL_SECTIONS=[
+  {title:'SERVICIOS',items:['Luz activa','Gas activo']},
+  {title:'SANITARIOS – COCINA Y LAVADERO',items:['Bacha de cocina en buen estado','Tiene tapón','Sifón cocina no pierde','Grifería cocina funciona','Bacha de lavadero en buen estado','Grifería lavadero funciona','Canilla para lavarropas']},
+  {title:'BAÑO',items:['Inodoro completo','Flexibles en buen estado','Inodoro sellado','Bidet en buen estado','Lavatorio en buen estado','Grifería de ducha completa','Sellado de ducha','Rejilla de piso en buen estado','Tiene espejo','Tiene portarrollo','Tiene toallero']},
+  {title:'TERMOTANQUE / CALEFACTOR',items:['Termotanque funciona correctamente','Fue limpiado por dentro','Tiene palanca de corte','Calefactor en buen estado','Sin pérdida de gas']},
+  {title:'ELECTRICIDAD',items:['Tiene plafón LED en todos los ambientes','Enchufes funcionan','Tablero con tapa','Tiene térmicas y disyuntores']},
+  {title:'PUERTAS Y VENTANAS',items:['Puertas placas en buen estado','Picaportes funcionan','Cerraduras tienen llaves','Cierran correctamente todas las puertas','Ventanas con todos los vidrios','Cierres de ventanas funcionan']},
+  {title:'MUEBLES',items:['Muebles de cocina en buen estado','Alacenas con estantes','Placares con puertas','Cajones funcionan']},
+  {title:'PINTURA Y PISOS',items:['Cielorrasos pintados','Paredes pintadas','Sin cerámico roto o faltante','Zócalos en buen estado','Sin manchas de humedad']},
+];
+
+function buildChecklistForm(data){
+  const c=document.getElementById('checklistFormItems');
+  c.innerHTML=CL_SECTIONS.map((s,si)=>`
+    <div class="cl-section">
+      <h3>${s.title}</h3>
+      <div class="cl-header-row"><span>Ítem</span><span style="text-align:center">SI</span><span style="text-align:center">NO</span><span>Comentarios</span></div>
+      <div class="cl-grid">${s.items.map((item,ii)=>{
+        const key=`cl_${si}_${ii}`;
+        const val=data?.[key];
+        return`<div class="cl-row">
+          <div class="cl-label">${item}</div>
+          <div class="cl-radio"><label><input type="radio" name="${key}" value="SI" ${val==='SI'?'checked':''}/> SI</label></div>
+          <div class="cl-radio"><label><input type="radio" name="${key}" value="NO" ${val==='NO'?'checked':''}/> NO</label></div>
+          <div class="cl-comment"><input type="text" id="${key}_comment" value="${data?.[key+'_comment']||''}" placeholder="Comentario…"/></div>
+        </div>`;
+      }).join('')}</div>
+    </div>`).join('');
+}
+
+function openChecklistForm(id){
+  editingId.checklist=id||null;
+  document.getElementById('clFecha').value=new Date().toISOString().split('T')[0];
+  clearFields(['clId','clDomicilio','clManzana','clLote']);
+  // Populate selects fresh
+  const clPropEl=document.getElementById('clProp');
+  clPropEl.innerHTML='<option value="">Seleccionar propiedad…</option>'+props.map(p=>`<option value="${p.id}">${p.titulo}</option>`).join('');
+  const clTenEl=document.getElementById('clTen');
+  clTenEl.innerHTML='<option value="">Seleccionar inquilino…</option>'+tenants.map(t=>`<option value="${t.id}">${t.nombre}</option>`).join('');
+  let clData=null;
+  if(id){const c=checklists.find(x=>x.id===id);if(!c)return;
+    setFields({clId:c.id,clDomicilio:c.domicilio,clManzana:c.manzana,clLote:c.lote,clFecha:c.fecha});
+    document.getElementById('clProp').value=c.propiedadId||'';
+    document.getElementById('clTen').value=c.inquilinoId||'';
+    document.getElementById('clTipo').value=c.tipo||'Entrega de llaves';
+    clData=c.items||null;
+  }
+  buildChecklistForm(clData);
+  openOv('ovChecklist');
+}
+function editChecklist(id){openChecklistForm(id);}
+
+function getChecklistData(){
+  const items={};
+  CL_SECTIONS.forEach((s,si)=>{
+    s.items.forEach((item,ii)=>{
+      const key=`cl_${si}_${ii}`;
+      const checked=document.querySelector(`input[name="${key}"]:checked`);
+      items[key]=checked?.value||null;
+      items[key+'_comment']=document.getElementById(`${key}_comment`)?.value||'';
+    });
+  });
+  return items;
+}
+
+async function saveChecklist(){
+  const propId=document.getElementById('clProp').value;
+  if(!propId){toast('⚠️ Seleccioná una propiedad','err');return;}
+  const pr=props.find(p=>p.id===propId);
+  const tenId=document.getElementById('clTen').value;
+  const te=tenants.find(t=>t.id===tenId);
+  const data={propiedadId:propId,propNombre:pr?.titulo||'',inquilinoId:tenId||null,tenNombre:te?.nombre||'',
+    fecha:document.getElementById('clFecha').value,tipo:document.getElementById('clTipo').value,
+    domicilio:v('clDomicilio'),manzana:v('clManzana'),lote:v('clLote'),
+    items:getChecklistData(),firmado:false,updatedAt:new Date().toISOString()};
+  try{
+    if(editingId.checklist) await db.collection('checklists').doc(editingId.checklist).set(data,{merge:true});
+    else{data.fechaAlta=new Date().toISOString();await db.collection('checklists').add(data);}
+    closeOv('ovChecklist');toast('✅ Checklist guardado','ok');
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+function previewChecklist(){
+  const items=getChecklistData();
+  const prop=props.find(p=>p.id===document.getElementById('clProp').value);
+  const ten=tenants.find(t=>t.id===document.getElementById('clTen').value);
+  const fecha=document.getElementById('clFecha').value;
+  const tipo=document.getElementById('clTipo').value;
+  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Checklist PuntoAr</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:Arial,sans-serif;font-size:11px;margin:25px;color:#111}
+    .hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #4aaa5a;padding-bottom:8px;margin-bottom:10px}
+    .hdr-title{font-size:15px;font-weight:bold;color:#1a1a1a}
+    .hdr-sub{font-size:10px;color:#666;margin-top:2px}
+    .meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;background:#f4f5f4;padding:6px 8px;border-radius:4px;margin-bottom:10px;font-size:10px}
+    .meta strong{display:block;color:#4aaa5a;font-size:9px;text-transform:uppercase;letter-spacing:.04em}
+    .section-title{background:#4aaa5a;color:#fff;padding:4px 8px;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;margin:10px 0 3px;border-radius:3px}
+    table{width:100%;border-collapse:collapse;margin-bottom:2px}
+    thead th{background:#f0f0f0;padding:3px 6px;font-size:9px;text-transform:uppercase;color:#666;letter-spacing:.04em;border:1px solid #ddd}
+    thead th.centro{text-align:center;width:42px}
+    tbody tr:nth-child(even){background:#fafafa}
+    tbody td{padding:4px 6px;border:1px solid #eee;font-size:10.5px;vertical-align:middle}
+    tbody td.centro{text-align:center;width:42px}
+    .si-box{display:inline-block;width:16px;height:16px;border:1.5px solid #4aaa5a;border-radius:3px;text-align:center;line-height:14px;font-size:11px;font-weight:bold;color:#4aaa5a}
+    .no-box{display:inline-block;width:16px;height:16px;border:1.5px solid #ef4444;border-radius:3px;text-align:center;line-height:14px;font-size:11px;font-weight:bold;color:#ef4444}
+    .empty-box{display:inline-block;width:16px;height:16px;border:1px solid #ccc;border-radius:3px}
+    .comment{color:#888;font-style:italic;font-size:9.5px}
+    .firmas{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:35px}
+    .firma-box{border-top:1.5px solid #333;padding-top:5px;font-size:10px;text-align:center}
+    .footer{margin-top:20px;font-size:9px;color:#999;border-top:1px solid #eee;padding-top:6px;text-align:center}
+    @media print{body{margin:15px}}
+  </style></head><body>`;
+
+  html+=`<div class="hdr">
+    <div><div class="hdr-title">CHECK LIST PARA ALQUILAR</div><div class="hdr-sub">PuntoAr Obras Civiles · ${tipo}</div></div>
+    <div style="text-align:right;font-size:10px;color:#666">Fecha: <strong>${fecha}</strong></div>
+  </div>
+  <div class="meta">
+    <div><strong>Inmueble</strong>${prop?.titulo||v('clDomicilio')||'—'}</div>
+    <div><strong>Dirección</strong>${v('clDomicilio')||prop?.direccion||'—'}</div>
+    <div><strong>Inquilino</strong>${ten?.nombre||'—'}</div>
+    <div><strong>Manzana</strong>${v('clManzana')||'—'}</div>
+    <div><strong>Lote</strong>${v('clLote')||'—'}</div>
+  </div>`;
+
+  CL_SECTIONS.forEach((s,si)=>{
+    html+=`<div class="section-title">${s.title}</div>
+    <table><thead><tr><th style="text-align:left">Ítem</th><th class="centro">SI</th><th class="centro">NO</th><th style="text-align:left">Comentarios</th></tr></thead><tbody>`;
+    s.items.forEach((item,ii)=>{
+      const key=`cl_${si}_${ii}`;const val=items[key];const comment=items[key+'_comment'];
+      const siBox=val==='SI'?`<span class="si-box">✓</span>`:`<span class="empty-box"></span>`;
+      const noBox=val==='NO'?`<span class="no-box">✗</span>`:`<span class="empty-box"></span>`;
+      html+=`<tr><td>${item}</td><td class="centro">${siBox}</td><td class="centro">${noBox}</td><td class="comment">${comment||''}</td></tr>`;
+    });
+    html+=`</tbody></table>`;
+  });
+
+  html+=`<div class="firmas">
+    <div class="firma-box">Firma Propietario / Inmobiliaria<br/><span style="font-size:9px;color:#999">Aclaración y DNI</span></div>
+    <div class="firma-box">Firma Inquilino<br/><span style="font-size:9px;color:#999">Aclaración y DNI</span></div>
+  </div>
+  <div class="footer">PuntoAr Obras Civiles · En caso de disconformidad con algún ítem, tiene 48hs para enviar fotos o videos como constancia.</div>
+  </body></html>`;
+
+  const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),400);
+}
+
+// ── MEDIA ─────────────────────────────────────────────────────────────────
+function handleMedia(e){
+  [...e.target.files].forEach(file=>{
+    const isVideo=file.type.startsWith('video/');
+    const reader=new FileReader();
+    reader.onload=ev=>{mediaFiles.push({src:ev.target.result,file,url:null,type:isVideo?'video':'image'});renderMediaPrev();};
+    reader.readAsDataURL(file);
+  });
+  e.target.value='';
+}
+function renderMediaPrev(){
+  document.getElementById('mediaPrev').innerHTML=mediaFiles.map((m,i)=>`
+    <div class="mp-item">
+      ${m.type==='video'?`<video src="${m.src||m.url}" muted></video>`:`<img src="${m.src||m.url}" alt=""/>`}
+      <button class="rm" onclick="removeMedia(${i})">✕</button>
+      <span class="type-badge">${m.type==='video'?'🎬':'📷'}</span>
+    </div>`).join('');
+}
+function removeMedia(i){mediaFiles.splice(i,1);renderMediaPrev();}
+
+// ── SELECTS ───────────────────────────────────────────────────────────────
+function updateSelects(){
+  // Propietario filter en tabla
+  const pProp=document.getElementById('pProp');
+  if(pProp){const cur=pProp.value;pProp.innerHTML='<option value="">Todos los propietarios</option>'+owners.map(o=>`<option value="${o.id}">${o.nombre}</option>`).join('');pProp.value=cur;}
+  // Propietario en form
+  const prProp=document.getElementById('prProp');
+  if(prProp){const cur=prProp.value;prProp.innerHTML='<option value="">Sin asignar</option>'+owners.map(o=>`<option value="${o.id}">${o.nombre}</option>`).join('');prProp.value=cur;}
+  // Contrato selects
+  const ctProp=document.getElementById('ctProp');
+  if(ctProp){const cur=ctProp.value;ctProp.innerHTML='<option value="">Seleccionar…</option>'+props.map(p=>`<option value="${p.id}">${p.titulo}</option>`).join('');ctProp.value=cur;}
+  const ctTen=document.getElementById('ctTen');
+  if(ctTen){const cur=ctTen.value;ctTen.innerHTML='<option value="">Seleccionar…</option>'+tenants.map(t=>`<option value="${t.id}">${t.nombre}</option>`).join('');ctTen.value=cur;}
+  // Pago contrato
+  const pagoContrato=document.getElementById('pagoContrato');
+  if(pagoContrato){const cur=pagoContrato.value;pagoContrato.innerHTML='<option value="">Seleccionar…</option>'+contratos.filter(c=>c.estado==='Activo').map(c=>`<option value="${c.id}">${c.propNombre} – ${c.tenNombre}</option>`).join('');pagoContrato.value=cur;}
+  // Checklist prop/tenant
+  const clProp=document.getElementById('clProp');
+  if(clProp){const cur=clProp.value;clProp.innerHTML='<option value="">Seleccionar…</option>'+props.map(p=>`<option value="${p.id}">${p.titulo}</option>`).join('');clProp.value=cur;}
+  const clTen=document.getElementById('clTen');
+  if(clTen){const cur=clTen.value;clTen.innerHTML='<option value="">Seleccionar…</option>'+tenants.map(t=>`<option value="${t.id}">${t.nombre}</option>`).join('');clTen.value=cur;}
+  const tenPropSel=document.getElementById('tenPropId');
+  if(tenPropSel){const cur=tenPropSel.value;tenPropSel.innerHTML='<option value="">Sin asignar</option>'+props.map(p=>`<option value="${p.id}">${p.titulo}</option>`).join('');tenPropSel.value=cur;}
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function switchTab(group,tab,el){
+  document.querySelectorAll(`#prop-tab-${tab}`.replace(tab,'info'),`#prop-tab-ubic`,`#prop-tab-caract`,`#prop-tab-media`,`#prop-tab-conds`).forEach(()=>{});
+  document.querySelectorAll(`[id^="${group}-tab-"]`).forEach(p=>p.classList.remove('active'));
+  document.getElementById(`${group}-tab-${tab}`).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+function switchTabTo(group,tab){
+  document.querySelectorAll(`[id^="${group}-tab-"]`).forEach(p=>p.classList.remove('active'));
+  document.getElementById(`${group}-tab-${tab}`).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.tab:first-child`)?.classList.add('active');
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────
+function v(id){const el=document.getElementById(id);return el?el.value:'';}
+function clearFields(ids){ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';})}
+function setFields(obj){Object.entries(obj).forEach(([id,val])=>{const el=document.getElementById(id);if(el&&val!=null)el.value=val;});}
+function buildList(id,items){const c=document.getElementById(id);if(!c)return;c.innerHTML='';items.forEach(v=>addItem(id,v));}
+function addItem(id,val=''){const c=document.getElementById(id);if(!c)return;const d=document.createElement('div');d.className='dl-i';d.innerHTML=`<input type="text" value="${val}" placeholder="Escribí acá…"/><button class="dl-rm" onclick="this.parentElement.remove()">✕</button>`;c.appendChild(d);}
+function getList(id){return[...document.getElementById(id)?.querySelectorAll('input')||[]].map(i=>i.value.trim()).filter(Boolean);}
+function tipoIco(t){return{Departamento:'🏢',Casa:'🏡','Local comercial':'🏪',Terreno:'🌿'}[t]||'🏠';}
+function fmtP(n){return'$'+Number(n||0).toLocaleString('es-AR');}
+function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3400);}
+
+// ── Event listeners (safe, after DOM + scripts loaded) ────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  const btnLogin = document.getElementById('btnLogin');
+  const liPass   = document.getElementById('liPass');
+  if (btnLogin) btnLogin.addEventListener('click', doLogin);
+  if (liPass)   liPass.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+});
+function openOv(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeOv(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+function closeOvIf(e,id){if(e.target===document.getElementById(id))closeOv(id);}
+function confirmDel(col, id, name) {
+  const label = name && name.length < 40 ? `"${name}"` : 'este registro';
+  confirm_(`¿Eliminar ${label}? Esta acción no se puede deshacer.`, () => delDoc(col, id));
+}
+function confirm_(msg,fn){document.getElementById('confMsg').textContent=msg;document.getElementById('confOk').onclick=()=>{fn();closeConf();};document.getElementById('ovConf').classList.add('open');}
+function closeConf(){document.getElementById('ovConf').classList.remove('open');}
+async function delDoc(col,id){try{await db.collection(col).doc(id).delete();toast('🗑 Eliminado','ok');}catch(e){toast('❌ '+e.message,'err');}}
+</script>
+</body>
+</html>
