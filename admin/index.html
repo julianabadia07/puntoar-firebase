@@ -231,13 +231,15 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
 /* Responsive */
 @media(max-width:900px){
   .sidebar{transform:translateX(-100%)}
-  .sidebar.mob-open{transform:none}
+  .sidebar.mob-open{transform:none;box-shadow:4px 0 24px rgba(0,0,0,.35)}
   .main{margin-left:0}
   .fg{grid-template-columns:1fr}
   .fg.c3{grid-template-columns:1fr 1fr}
   .cl-row{grid-template-columns:1fr 60px 60px}
   .cl-comment{display:none}
+  #btnHamburger{display:inline-flex!important}
 }
+.mob-overlay{display:none;position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.45)}
 @media(max-width:600px){
   .stats-row{grid-template-columns:1fr 1fr}
   .content{padding:1rem}
@@ -303,6 +305,7 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
     PuntoAr Obras Civiles · 2026
   </div>
 </aside>
+<div class="mob-overlay" id="mobOverlay" onclick="closeSidebar()"></div>
 
 <!-- MAIN -->
 <div class="main">
@@ -818,8 +821,15 @@ function nav(page){
 }
 function topbarAction(){if(window._topbarAction)window._topbarAction();}
 window._topbarAction=()=>openPropForm();
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('mob-open');}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('mob-open');}
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('mob-open');
+  document.getElementById('mobOverlay').style.display = 
+    document.getElementById('sidebar').classList.contains('mob-open') ? 'block' : 'none';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('mob-open');
+  document.getElementById('mobOverlay').style.display='none';
+}
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────
 function renderDashboard(){
@@ -1043,6 +1053,7 @@ function renderChecklists(){
     <td><span class="badge ${c.firmado?'b-green':'b-yellow'}">${c.firmado?'Firmado':'Pendiente'}</span></td>
     <td><div class="td-acts">
       <button class="btn btn-i btn-xs" onclick="editChecklist('${c.id}')">👁 Ver</button>
+      ${!c.firmado?`<button class="btn btn-p btn-xs" onclick="marcarFirmado('${c.id}')">✍️ Firmar</button>`:''}
       <button class="btn btn-d btn-xs" onclick="confirmDel('checklists','${c.id}','checklist')">🗑</button>
     </div></td></tr>`).join('');
 }
@@ -1480,6 +1491,13 @@ function getChecklistData(){
   return items;
 }
 
+async function marcarFirmado(id){
+  try{
+    await db.collection('checklists').doc(id).update({firmado:true,updatedAt:new Date().toISOString()});
+    toast('✍️ Checklist marcado como firmado','ok');
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
 async function saveChecklist(){
   const propId=document.getElementById('clProp').value;
   if(!propId){toast('⚠️ Seleccioná una propiedad','err');return;}
@@ -1560,7 +1578,14 @@ function previewChecklist(){
   <div class="footer">PuntoAr Obras Civiles · En caso de disconformidad con algún ítem, tiene 48hs para enviar fotos o videos como constancia.</div>
   </body></html>`;
 
-  const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),400);
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  // Set document title so "Save as PDF" uses it as filename
+  const propNom=(prop?.titulo||v('clDomicilio')||'propiedad').replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]/g,'-');
+  const tenNom=(ten?.nombre||'').replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]/g,'-');
+  const filename=`Checklist-${propNom}${tenNom?' - '+tenNom:''}`;
+  setTimeout(()=>{w.document.title=filename;w.print();},400);
 }
 
 // ── MEDIA ─────────────────────────────────────────────────────────────────
