@@ -236,10 +236,7 @@
       <option>Departamento</option><option>Casa</option>
       <option>Local comercial</option><option>Terreno</option>
     </select>
-    <select class="fsel" id="sEst" onchange="applyFilters()">
-      <option value="">Cualquier estado</option>
-      <option>Disponible</option><option>Reservado</option>
-    </select>
+
     <button class="btn-mas-filtros" onclick="toggleAdv()">⚙ Más filtros</button>
     <div class="view-tgl">
       <button class="vb on" id="btnGrid" onclick="setView('grid')" title="Grilla">⊞</button>
@@ -362,9 +359,9 @@ let curProp  = null;
 // ── Load from Firestore ───────────────────────────────────────────────────
 showSkeletons();
 db.collection('propiedades').orderBy('fechaAlta','desc').onSnapshot(snap => {
-  allProps = snap.docs.map(d => ({id: d.id, ...d.data()}));
+  allProps = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(p => p.estado === 'Disponible');
   document.getElementById('stTotal').textContent = allProps.length;
-  document.getElementById('stDisp').textContent  = allProps.filter(p=>p.estado==='Disponible').length;
+  document.getElementById('stDisp').textContent  = allProps.length;
   applyFilters();
 }, err => {
   console.error(err);
@@ -380,7 +377,7 @@ function showSkeletons() {
 function applyFilters() {
   const q    = document.getElementById('sQuery').value.toLowerCase();
   const tipo = document.getElementById('sTipo').value;
-  const est  = document.getElementById('sEst').value;
+  const est  = 'Disponible';
   const pMin = +document.getElementById('fPMin').value || 0;
   const pMax = +document.getElementById('fPMax').value || Infinity;
   const dorm = +document.getElementById('fDorm').value || 0;
@@ -391,7 +388,7 @@ function applyFilters() {
   filtered = allProps.filter(p => {
     if (q && !`${p.titulo||''} ${p.descripcion||''} ${p.direccion||''} ${p.barrio||''} ${p.ciudad||''}`.toLowerCase().includes(q)) return false;
     if (tipo && p.tipo !== tipo) return false;
-    if (est && p.estado !== est) return false;
+
     if ((p.precio||0) < pMin || (p.precio||0) > pMax) return false;
     if (dorm && (p.dormitorios||0) < dorm) return false;
     if (ba && !(p.barrio||'').toLowerCase().includes(ba)) return false;
@@ -409,7 +406,7 @@ function applyFilters() {
 
 function limpiar() {
   ['sQuery','fPMin','fPMax','fBarrio'].forEach(id=>document.getElementById(id).value='');
-  ['sTipo','sEst','fDorm','fDest','sortSel'].forEach(id=>document.getElementById(id).selectedIndex=0);
+  ['sTipo','fDorm','fDest','sortSel'].forEach(id=>document.getElementById(id).selectedIndex=0);
   applyFilters();
 }
 function toggleAdv() { document.getElementById('advPanel').classList.toggle('open'); }
@@ -432,7 +429,7 @@ function renderProps() {
 
 function mkCard(p) {
   const isFav = favs.includes(p.id);
-  const bdCls = p.estado==='Reservado'?'cb-res':p.estado==='Alquilado'?'cb-alq':'cb-disp';
+
   const imgHtml = p.imagenes?.length
     ? `<img src="${p.imagenes[0]}" alt="${p.titulo||''}" loading="lazy"/>`
     : `<div class="no-img"><span>${tipoIco(p.tipo)}</span><small>Sin fotos</small></div>`;
@@ -442,7 +439,6 @@ function mkCard(p) {
   div.innerHTML = `
     <div class="ci">
       ${imgHtml}
-      <span class="c-badge ${bdCls}">${p.estado||'—'}</span>
       ${p.destacado?'<span class="c-dest">⭐</span>':''}
       <button class="c-fav ${isFav?'on':''}" onclick="tglFav(event,'${p.id}')">${isFav?'♥':'♡'}</button>
     </div>
@@ -525,10 +521,7 @@ function buildModBody(p) {
         <div class="pb-v">${fmtP(p.precio)}</div>
         <div class="pb-s">Actualización por IPC cada 3 meses</div>
       </div>
-      <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:.65rem .9rem;text-align:center">
-        <div style="font-size:.72rem;opacity:.8">Estado</div>
-        <div style="font-weight:700;font-size:1.05rem;margin-top:.1rem">${p.estado||'—'}</div>
-      </div>
+      
     </div>
     ${gastos}
     <div class="mod-g2">${cond}${req}</div>

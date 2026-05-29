@@ -680,9 +680,31 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
         <div class="fgr"><label>Lote</label><input type="text" id="clLote"/></div>
       </div>
       <div id="checklistFormItems"></div>
+      <!-- FIRMAS -->
+      <div class="firma-section">
+        <div class="firma-title">✍️ Firmas digitales</div>
+        <div class="firmas-grid">
+          <div class="firma-box" id="firmaBoxAdmin">
+            <div class="firma-label">
+              <span>🏢 Inmobiliaria / Propietario</span>
+              <button class="btn btn-s btn-xs" onclick="clearFirma('admin')">Limpiar</button>
+            </div>
+            <canvas class="firma-canvas" id="firmaAdmin" width="400" height="140"></canvas>
+            <div class="firma-hint">Firmá con el dedo o el mouse</div>
+          </div>
+          <div class="firma-box" id="firmaBoxInq">
+            <div class="firma-label">
+              <span>🔑 Inquilino</span>
+              <button class="btn btn-s btn-xs" onclick="clearFirma('inq')">Limpiar</button>
+            </div>
+            <canvas class="firma-canvas" id="firmaInq" width="400" height="140"></canvas>
+            <div class="firma-hint">Firmá con el dedo o el mouse</div>
+          </div>
+        </div>
+      </div>
       <div class="mfooter">
         <button class="btn btn-s" onclick="closeOv('ovChecklist')">Cancelar</button>
-        <button class="btn btn-i" onclick="previewChecklist()">👁 Preview PDF</button>
+        <button class="btn btn-i" onclick="previewChecklist()">👁 Preview con firmas</button>
         <button class="btn btn-p" onclick="saveChecklist()">💾 Guardar</button>
       </div>
     </div>
@@ -1507,7 +1529,10 @@ async function saveChecklist(){
   const data={propiedadId:propId,propNombre:pr?.titulo||'',inquilinoId:tenId||null,tenNombre:te?.nombre||'',
     fecha:document.getElementById('clFecha').value,tipo:document.getElementById('clTipo').value,
     domicilio:v('clDomicilio'),manzana:v('clManzana'),lote:v('clLote'),
-    items:getChecklistData(),firmado:false,updatedAt:new Date().toISOString()};
+    items:getChecklistData(),
+    firmado:!!(getFirmaDataURL('admin')||getFirmaDataURL('inq')),
+    firmaAdmin:getFirmaDataURL('admin')||null,
+    firmaInq:getFirmaDataURL('inq')||null,updatedAt:new Date().toISOString()};
   try{
     if(editingId.checklist) await db.collection('checklists').doc(editingId.checklist).set(data,{merge:true});
     else{data.fechaAlta=new Date().toISOString();await db.collection('checklists').add(data);}
@@ -1545,7 +1570,18 @@ function previewChecklist(){
     .firma-box{border-top:1.5px solid #333;padding-top:5px;font-size:10px;text-align:center}
     .footer{margin-top:20px;font-size:9px;color:#999;border-top:1px solid #eee;padding-top:6px;text-align:center}
     @media print{body{margin:15px}}
-  </style></head><body>`;
+  
+/* ── FIRMAS DIGITALES ── */
+.firma-section{margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid #f0f0f0}
+.firma-title{font-size:.78rem;font-weight:700;color:var(--v);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+.firmas-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:.5rem}
+.firma-box{border:2px solid #dde;border-radius:10px;overflow:hidden;background:#fff;transition:border-color .2s}
+.firma-box.has-firma{border-color:var(--v)}
+.firma-label{background:var(--gl);padding:.5rem .8rem;font-size:.72rem;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.06em;display:flex;justify-content:space-between;align-items:center}
+.firma-canvas{display:block;width:100%;height:130px;cursor:crosshair;touch-action:none;background:#fff}
+.firma-hint{font-size:.7rem;color:#bbb;text-align:center;padding:.28rem;font-style:italic;background:#fafafa;border-top:1px solid #f5f5f5}
+@media(max-width:600px){.firmas-grid{grid-template-columns:1fr}}
+</style></head><body>`;
 
   html+=`<div class="hdr">
     <div><div class="hdr-title">CHECK LIST PARA ALQUILAR</div><div class="hdr-sub">PuntoAr Obras Civiles · ${tipo}</div></div>
@@ -1571,12 +1607,20 @@ function previewChecklist(){
     html+=`</tbody></table>`;
   });
 
-  html+=`<div class="firmas">
-    <div class="firma-box">Firma Propietario / Inmobiliaria<br/><span style="font-size:9px;color:#999">Aclaración y DNI</span></div>
-    <div class="firma-box">Firma Inquilino<br/><span style="font-size:9px;color:#999">Aclaración y DNI</span></div>
-  </div>
-  <div class="footer">PuntoAr Obras Civiles · En caso de disconformidad con algún ítem, tiene 48hs para enviar fotos o videos como constancia.</div>
-  </body></html>`;
+  const firmaAdminImg = getFirmaDataURL('admin');
+  const firmaInqImg   = getFirmaDataURL('inq');
+  const firmaAdminHtml = firmaAdminImg
+    ? '<img src="' + firmaAdminImg + '" style="max-height:60px;display:block;margin:4px auto"/>'
+    : '<div style="height:55px"></div>';
+  const firmaInqHtml = firmaInqImg
+    ? '<img src="' + firmaInqImg + '" style="max-height:60px;display:block;margin:4px auto"/>'
+    : '<div style="height:55px"></div>';
+  html += '<div class="firmas">'
+    + '<div class="firma-box">' + firmaAdminHtml + '<div>Firma Propietario / Inmobiliaria</div><span style="font-size:9px;color:#999">Aclaración y DNI</span></div>'
+    + '<div class="firma-box">' + firmaInqHtml + '<div>Firma Inquilino</div><span style="font-size:9px;color:#999">Aclaración y DNI</span></div>'
+    + '</div>';
+  html += '<div class="footer">PuntoAr Obras Civiles · En caso de disconformidad con algún ítem, tiene 48hs para enviar fotos o videos como constancia.</div>';
+  html += '</body></html>';
 
   const w=window.open('','_blank');
   w.document.write(html);
@@ -1635,17 +1679,16 @@ function updateSelects(){
 
 // ── TABS ──────────────────────────────────────────────────────────────────
 function switchTab(group,tab,el){
-  document.querySelectorAll(`#prop-tab-${tab}`.replace(tab,'info'),`#prop-tab-ubic`,`#prop-tab-caract`,`#prop-tab-media`,`#prop-tab-conds`).forEach(()=>{});
-  document.querySelectorAll(`[id^="${group}-tab-"]`).forEach(p=>p.classList.remove('active'));
-  document.getElementById(`${group}-tab-${tab}`).classList.add('active');
+  document.querySelectorAll('[id^="'+group+'-tab-"]').forEach(p=>p.classList.remove('active'));
+  document.getElementById(group+'-tab-'+tab).classList.add('active');
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
 }
 function switchTabTo(group,tab){
-  document.querySelectorAll(`[id^="${group}-tab-"]`).forEach(p=>p.classList.remove('active'));
-  document.getElementById(`${group}-tab-${tab}`).classList.add('active');
+  document.querySelectorAll('[id^="'+group+'-tab-"]').forEach(p=>p.classList.remove('active'));
+  document.getElementById(group+'-tab-'+tab).classList.add('active');
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelector(`.tab:first-child`)?.classList.add('active');
+  document.querySelector('.tab:first-child')?.classList.add('active');
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────
@@ -1653,11 +1696,11 @@ function v(id){const el=document.getElementById(id);return el?el.value:'';}
 function clearFields(ids){ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';})}
 function setFields(obj){Object.entries(obj).forEach(([id,val])=>{const el=document.getElementById(id);if(el&&val!=null)el.value=val;});}
 function buildList(id,items){const c=document.getElementById(id);if(!c)return;c.innerHTML='';items.forEach(v=>addItem(id,v));}
-function addItem(id,val=''){const c=document.getElementById(id);if(!c)return;const d=document.createElement('div');d.className='dl-i';d.innerHTML=`<input type="text" value="${val}" placeholder="Escribí acá…"/><button class="dl-rm" onclick="this.parentElement.remove()">✕</button>`;c.appendChild(d);}
+function addItem(id,val=''){const c=document.getElementById(id);if(!c)return;const d=document.createElement('div');d.className='dl-i';d.innerHTML='<input type="text" value="'+val+'" placeholder="Escribí acá…"/><button class="dl-rm" onclick="this.parentElement.remove()">✕</button>';c.appendChild(d);}
 function getList(id){return[...document.getElementById(id)?.querySelectorAll('input')||[]].map(i=>i.value.trim()).filter(Boolean);}
 function tipoIco(t){return{Departamento:'🏢',Casa:'🏡','Local comercial':'🏪',Terreno:'🌿'}[t]||'🏠';}
 function fmtP(n){return'$'+Number(n||0).toLocaleString('es-AR');}
-function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3400);}
+function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3400);}
 
 // ── Event listeners (safe, after DOM + scripts loaded) ────────────────────
 document.addEventListener('DOMContentLoaded', function() {
@@ -1670,12 +1713,69 @@ function openOv(id){document.getElementById(id).classList.add('open');document.b
 function closeOv(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
 function closeOvIf(e,id){if(e.target===document.getElementById(id))closeOv(id);}
 function confirmDel(col, id, name) {
-  const label = name && name.length < 40 ? `"${name}"` : 'este registro';
-  confirm_(`¿Eliminar ${label}? Esta acción no se puede deshacer.`, () => delDoc(col, id));
+  const label = name && name.length < 40 ? ('"' + name + '"') : 'este registro';
+  confirm_('¿Eliminar ' + label + '? Esta acción no se puede deshacer.', () => delDoc(col, id));
 }
 function confirm_(msg,fn){document.getElementById('confMsg').textContent=msg;document.getElementById('confOk').onclick=()=>{fn();closeConf();};document.getElementById('ovConf').classList.add('open');}
 function closeConf(){document.getElementById('ovConf').classList.remove('open');}
 async function delDoc(col,id){try{await db.collection(col).doc(id).delete();toast('🗑 Eliminado','ok');}catch(e){toast('❌ '+e.message,'err');}}
+
+// ── FIRMAS DIGITALES ──────────────────────────────────────────────────────
+const firmaState = { admin: { drawing: false, empty: true }, inq: { drawing: false, empty: true } };
+
+function initFirma(id) {
+  const canvas = document.getElementById('firma' + (id==='admin'?'Admin':'Inq'));
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  // Scale canvas to actual display size
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width || 400;
+  canvas.height = 130;
+  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth = 2.2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX - r.left) * (canvas.width / r.width), y: (src.clientY - r.top) * (canvas.height / r.height) };
+  }
+  function start(e) { e.preventDefault(); firmaState[id].drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
+  function draw(e)  { e.preventDefault(); if (!firmaState[id].drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); firmaState[id].empty = false; document.getElementById('firmaBox'+(id==='admin'?'Admin':'Inq')).classList.add('has-firma'); }
+  function stop(e)  { e.preventDefault(); firmaState[id].drawing = false; ctx.beginPath(); }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stop);
+  canvas.addEventListener('mouseleave', stop);
+  canvas.addEventListener('touchstart', start, {passive:false});
+  canvas.addEventListener('touchmove', draw, {passive:false});
+  canvas.addEventListener('touchend', stop, {passive:false});
+}
+
+function clearFirma(id) {
+  const canvas = document.getElementById('firma' + (id==='admin'?'Admin':'Inq'));
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  firmaState[id].empty = true;
+  document.getElementById('firmaBox' + (id==='admin'?'Admin':'Inq')).classList.remove('has-firma');
+}
+
+function getFirmaDataURL(id) {
+  const canvas = document.getElementById('firma' + (id==='admin'?'Admin':'Inq'));
+  if (!canvas || firmaState[id].empty) return null;
+  return canvas.toDataURL('image/png');
+}
+
+// Init canvases when checklist opens
+const _origOpenChecklistForm = openChecklistForm;
+function openChecklistForm(id) {
+  _origOpenChecklistForm(id);
+  setTimeout(() => { initFirma('admin'); initFirma('inq'); clearFirma('admin'); clearFirma('inq'); }, 100);
+}
+
 </script>
 </body>
 </html>
