@@ -681,25 +681,38 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
       </div>
       <div id="checklistFormItems"></div>
       <!-- FIRMAS -->
-      <div class="firma-section">
-        <div class="firma-title">✍️ Firmas digitales</div>
-        <div class="firmas-grid">
-          <div class="firma-box" id="firmaBoxAdmin">
-            <div class="firma-label">
+      <div style="margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid #f0f0f0">
+        <div style="font-size:.78rem;font-weight:700;color:#4aaa5a;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">✍️ Firmas digitales</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+
+          <!-- Firma admin -->
+          <div style="border:1px solid #dde;border-radius:10px;overflow:hidden">
+            <div style="background:#f4f5f4;padding:.5rem .8rem;font-size:.72rem;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.06em;display:flex;justify-content:space-between;align-items:center">
               <span>🏢 Inmobiliaria / Propietario</span>
               <button class="btn btn-s btn-xs" onclick="clearFirma('admin')">Limpiar</button>
             </div>
-            <canvas class="firma-canvas" id="firmaAdmin" width="400" height="140"></canvas>
-            <div class="firma-hint">Firmá con el dedo o el mouse</div>
+            <div id="firmaBoxAdminWrap" style="position:relative;margin:8px;border:2px solid #4aaa5a;border-radius:8px;overflow:hidden;background:#f8fff9">
+              <canvas id="firmaAdmin" style="display:block;width:100%;height:140px;cursor:crosshair;touch-action:none"></canvas>
+              <div id="firmaPlaceholderAdmin" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+                <span style="font-size:.82rem;color:#4aaa5a;font-style:italic;opacity:.7;font-weight:500">Firmá aquí</span>
+              </div>
+            </div>
           </div>
-          <div class="firma-box" id="firmaBoxInq">
-            <div class="firma-label">
+
+          <!-- Firma inquilino -->
+          <div style="border:1px solid #dde;border-radius:10px;overflow:hidden">
+            <div style="background:#f4f5f4;padding:.5rem .8rem;font-size:.72rem;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.06em;display:flex;justify-content:space-between;align-items:center">
               <span>🔑 Inquilino</span>
               <button class="btn btn-s btn-xs" onclick="clearFirma('inq')">Limpiar</button>
             </div>
-            <canvas class="firma-canvas" id="firmaInq" width="400" height="140"></canvas>
-            <div class="firma-hint">Firmá con el dedo o el mouse</div>
+            <div id="firmaBoxInqWrap" style="position:relative;margin:8px;border:2px solid #4aaa5a;border-radius:8px;overflow:hidden;background:#f8fff9">
+              <canvas id="firmaInq" style="display:block;width:100%;height:140px;cursor:crosshair;touch-action:none"></canvas>
+              <div id="firmaPlaceholderInq" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+                <span style="font-size:.82rem;color:#4aaa5a;font-style:italic;opacity:.7;font-weight:500">Firmá aquí</span>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
       <div class="mfooter">
@@ -1497,6 +1510,8 @@ function openChecklistForm(id){
   }
   buildChecklistForm(clData);
   openOv('ovChecklist');
+  // Init firma canvases after modal opens
+  setTimeout(() => { initFirma('admin'); initFirma('inq'); clearFirma('admin'); clearFirma('inq'); }, 150);
 }
 function editChecklist(id){openChecklistForm(id);}
 
@@ -1579,7 +1594,27 @@ function previewChecklist(){
 .firma-box.has-firma{border-color:var(--v)}
 .firma-label{background:var(--gl);padding:.5rem .8rem;font-size:.72rem;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.06em;display:flex;justify-content:space-between;align-items:center}
 .firma-canvas{display:block;width:100%;height:130px;cursor:crosshair;touch-action:none;background:#fff}
-.firma-hint{font-size:.7rem;color:#bbb;text-align:center;padding:.28rem;font-style:italic;background:#fafafa;border-top:1px solid #f5f5f5}
+.firma-canvas-wrap{position:relative;margin:6px 0 0}
+.firma-canvas-wrap canvas{
+  display:block;width:100%;height:140px;
+  cursor:crosshair;touch-action:none;
+  background:#f8fff9;
+  border:2px solid #4aaa5a;
+  border-radius:8px;
+  box-sizing:border-box;
+}
+.firma-canvas-wrap .firma-placeholder{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;flex-direction:column;gap:6px;
+}
+.firma-canvas-wrap .firma-placeholder .fp-icon{font-size:1.6rem;opacity:.4}
+.firma-canvas-wrap .firma-placeholder .fp-text{
+  font-size:.78rem;color:#4aaa5a;font-style:italic;
+  opacity:.6;font-weight:500;
+}
+.firma-canvas-wrap.has-firma .firma-placeholder{display:none}
+
 @media(max-width:600px){.firmas-grid{grid-template-columns:1fr}}
 </style></head><body>`;
 
@@ -1616,8 +1651,16 @@ function previewChecklist(){
     ? '<img src="' + firmaInqImg + '" style="max-height:60px;display:block;margin:4px auto"/>'
     : '<div style="height:55px"></div>';
   html += '<div class="firmas">'
-    + '<div class="firma-box">' + firmaAdminHtml + '<div>Firma Propietario / Inmobiliaria</div><span style="font-size:9px;color:#999">Aclaración y DNI</span></div>'
-    + '<div class="firma-box">' + firmaInqHtml + '<div>Firma Inquilino</div><span style="font-size:9px;color:#999">Aclaración y DNI</span></div>'
+    + '<div class="firma-box" style="border:none;padding-top:4px">'
+      + firmaAdminHtml
+      + '<div style="border-top:1px solid #333;padding-top:4px;margin-top:8px">Firma Propietario / Inmobiliaria</div>'
+      + '<span style="font-size:9px;color:#999">Aclaración y DNI</span>'
+    + '</div>'
+    + '<div class="firma-box" style="border:none;padding-top:4px">'
+      + firmaInqHtml
+      + '<div style="border-top:1px solid #333;padding-top:4px;margin-top:8px">Firma Inquilino</div>'
+      + '<span style="font-size:9px;color:#999">Aclaración y DNI</span>'
+    + '</div>'
     + '</div>';
   html += '<div class="footer">PuntoAr Obras Civiles · En caso de disconformidad con algún ítem, tiene 48hs para enviar fotos o videos como constancia.</div>';
   html += '</body></html>';
@@ -1742,7 +1785,8 @@ function initFirma(id) {
     return { x: (src.clientX - r.left) * (canvas.width / r.width), y: (src.clientY - r.top) * (canvas.height / r.height) };
   }
   function start(e) { e.preventDefault(); firmaState[id].drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
-  function draw(e)  { e.preventDefault(); if (!firmaState[id].drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); firmaState[id].empty = false; document.getElementById('firmaBox'+(id==='admin'?'Admin':'Inq')).classList.add('has-firma'); }
+  function draw(e)  { e.preventDefault(); if (!firmaState[id].drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); firmaState[id].empty = false; document.getElementById('firmaBox'+(id==='admin'?'Admin':'Inq')).classList.add('has-firma');
+        document.getElementById('firmaBox'+(id==='admin'?'Admin':'Inq')+'Wrap').classList.add('has-firma'); }
   function stop(e)  { e.preventDefault(); firmaState[id].drawing = false; ctx.beginPath(); }
 
   canvas.addEventListener('mousedown', start);
@@ -1769,12 +1813,7 @@ function getFirmaDataURL(id) {
   return canvas.toDataURL('image/png');
 }
 
-// Init canvases when checklist opens
-const _origOpenChecklistForm = openChecklistForm;
-function openChecklistForm(id) {
-  _origOpenChecklistForm(id);
-  setTimeout(() => { initFirma('admin'); initFirma('inq'); clearFirma('admin'); clearFirma('inq'); }, 100);
-}
+
 
 </script>
 </body>
