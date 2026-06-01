@@ -123,11 +123,14 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
 .search-bar input:focus,.search-bar select:focus{border-color:var(--v);background:#fff}
 
 /* MODAL */
-.ov{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.52);backdrop-filter:blur(3px);justify-content:center;align-items:flex-start;padding:1.2rem 1rem;overflow-y:auto}
+.ov{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.52);backdrop-filter:blur(3px);justify-content:center;align-items:flex-start;padding:1.2rem 0.5rem;overflow-y:auto;overflow-x:hidden}
 .ov.open{display:flex}
 .modal{background:#fff;border-radius:var(--r);width:100%;max-width:640px;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:mIn .23s ease}
 .modal.wide{max-width:860px}
 .modal.narrow{max-width:480px}
+/* Modal body scroll fix */
+.mbody{overflow-x:hidden}
+.mbody input,.mbody select,.mbody textarea{max-width:100%}
 @keyframes mIn{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:none}}
 .mhdr{background:linear-gradient(135deg,#111,#2a5032);color:#fff;padding:1.25rem 1.65rem;border-radius:var(--r) var(--r) 0 0;display:flex;align-items:center;justify-content:space-between}
 .mhdr h2{font-size:1.02rem;font-weight:700}
@@ -193,14 +196,14 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
 .cl-section{margin-bottom:1.4rem}
 .cl-section h3{font-size:.82rem;font-weight:700;color:var(--v);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.75rem;padding:.5rem .75rem;background:var(--vl);border-radius:7px}
 .cl-grid{display:grid;grid-template-columns:1fr;gap:.4rem}
-.cl-row{display:grid;grid-template-columns:1fr 80px 80px 1fr;gap:.5rem;align-items:center;padding:.42rem .65rem;background:var(--gl);border-radius:7px;font-size:.83rem}
+.cl-row{display:grid;grid-template-columns:1fr 68px 68px 1fr;gap:.4rem;align-items:center;padding:.42rem .55rem;background:var(--gl);border-radius:7px;font-size:.83rem}
 .cl-row:nth-child(even){background:#f9f9f9}
 .cl-label{font-weight:500}
 .cl-radio{display:flex;gap:.5rem;justify-content:center}
 .cl-radio label{display:flex;align-items:center;gap:.22rem;cursor:pointer;font-size:.78rem;font-weight:600}
 .cl-radio input[type=radio]{accent-color:var(--v)}
-.cl-comment input{width:100%;padding:.3rem .55rem;border:1px solid #dde;border-radius:5px;font-size:.78rem;font-family:'DM Sans',sans-serif;outline:none;background:#fff}
-.cl-header-row{display:grid;grid-template-columns:1fr 80px 80px 1fr;gap:.5rem;padding:.3rem .65rem;font-size:.68rem;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.06em}
+.cl-comment input{width:100%;padding:.3rem .45rem;border:1px solid #dde;border-radius:5px;font-size:.75rem;font-family:'DM Sans',sans-serif;outline:none;background:#fff;min-width:0}
+.cl-header-row{display:grid;grid-template-columns:1fr 68px 68px 1fr;gap:.4rem;padding:.3rem .55rem;font-size:.68rem;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.06em}
 
 /* PAGOS */
 .pago-card{background:var(--gl);border-radius:10px;padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:.6rem;border-left:4px solid #ddd;transition:border-color .2s}
@@ -228,6 +231,23 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
 .sf-step.current{background:var(--v);color:#fff}
 .sf-arrow{color:#ccc;font-size:.85rem}
 
+/* Checklist mobile - comment below item */
+@media(max-width:480px){
+  .cl-row{
+    display:grid;
+    grid-template-columns:1fr 52px 52px;
+    grid-template-rows:auto auto;
+    gap:.25rem .3rem;
+  }
+  .cl-label{grid-column:1;grid-row:1}
+  .cl-radio:first-of-type{grid-column:2;grid-row:1}
+  .cl-radio:last-of-type{grid-column:3;grid-row:1}
+  .cl-comment{grid-column:1/-1;grid-row:2;display:block}
+  .cl-comment input{width:100%;font-size:.75rem;padding:.28rem .45rem}
+  .cl-header-row{grid-template-columns:1fr 52px 52px}
+  .cl-header-row span:last-child{display:none}
+}
+
 /* Responsive */
 @media(max-width:900px){
   .sidebar{transform:translateX(-100%)}
@@ -235,15 +255,65 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
   .main{margin-left:0}
   .fg{grid-template-columns:1fr}
   .fg.c3{grid-template-columns:1fr 1fr}
-  .cl-row{grid-template-columns:1fr 60px 60px}
-  .cl-comment{display:none}
+  .cl-row{display:grid;grid-template-columns:1fr 56px 56px;grid-template-rows:auto auto;gap:.25rem .3rem}
+  .cl-label{grid-column:1;grid-row:1}
+  .cl-radio:first-of-type{grid-column:2;grid-row:1}
+  .cl-radio:last-of-type{grid-column:3;grid-row:1}
+  .cl-comment{grid-column:1/-1;grid-row:2;display:block;margin-top:.1rem}
+  .cl-comment input{width:100%;box-sizing:border-box;font-size:.75rem;padding:.28rem .45rem}
+  .cl-header-row{grid-template-columns:1fr 56px 56px}
+  .cl-header-row span:last-child{display:none}
   #btnHamburger{display:inline-flex!important}
 }
 .mob-overlay{display:none;position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.45)}
-@media(max-width:600px){
+
+/* ── VALIDACIÓN ── */
+.fgr input.invalid,.fgr select.invalid,.fgr textarea.invalid{
+  border-color:var(--danger)!important;
+  background:#fff5f5!important;
+  box-shadow:0 0 0 3px rgba(239,68,68,.12)!important;
+}
+.fgr .val-err{
+  font-size:.7rem;color:var(--danger);margin-top:.2rem;display:none;
+}
+.fgr input.invalid~.val-err,
+.fgr select.invalid~.val-err,
+.fgr textarea.invalid~.val-err{display:block}
+@media(max-width:640px){
   .stats-row{grid-template-columns:1fr 1fr}
-  .content{padding:1rem}
-  .topbar{padding:.65rem 1rem}
+  .content{padding:.8rem}
+  .topbar{padding:.65rem .8rem}
+  /* Overlay sin padding lateral */
+  .ov{padding:0 !important;align-items:flex-end}
+  /* Modal ocupa todo el ancho como sheet */
+  .modal,.modal.wide,.modal.narrow{
+    border-radius:14px 14px 0 0 !important;
+    max-width:100% !important;
+    width:100% !important;
+    margin:0 !important;
+    max-height:92vh;
+    overflow-y:auto;
+    overflow-x:hidden;
+  }
+  .mhdr{border-radius:14px 14px 0 0}
+  .mbody{padding:1rem .9rem;overflow-x:hidden}
+  /* Todos los grids en 1 columna */
+  .fg,.fg.c1,.fg.c3{grid-template-columns:1fr !important}
+  .fgr.full{grid-column:1 !important}
+  /* Inputs no se salen */
+  .mbody input,.mbody select,.mbody textarea{
+    width:100% !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+  }
+  /* Firma grid 1 columna */
+  .firmas-grid-mobile{grid-template-columns:1fr !important}
+  /* Tabs scroll horizontal */
+  .tabs{overflow-x:auto;flex-wrap:nowrap}
+  .tab{white-space:nowrap;padding:.6rem .8rem;font-size:.78rem}
+  /* Footer buttons */
+  .mfooter{flex-direction:column}
+  .mfooter .btn{width:100%;justify-content:center}
 }
 </style>
 </head>
@@ -485,21 +555,21 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
       <input type="hidden" id="owId"/>
       <div class="fs-title">Datos personales / empresa</div>
       <div class="fg"><div class="fgr full"><label>Nombre completo o razón social *</label><input type="text" id="owNombre" placeholder="Constructores SA / Juan Pérez"/></div>
-        <div class="fgr"><label>CUIT / CUIL</label><input type="text" id="owCuit" placeholder="30-12345678-9"/></div>
+        <div class="fgr"><label>CUIT / CUIL</label><input type="text" id="owCuit" data-optional="1" data-optional="1" data-optional="1" placeholder="30-12345678-9"/></div>
         <div class="fgr"><label>Condición IVA</label><select id="owIva"><option>Responsable Inscripto</option><option>Monotributista</option><option>Exento</option><option>Consumidor Final</option></select></div>
         <div class="fgr"><label>Teléfono</label><input type="text" id="owTel" placeholder="+54 351 123-4567"/></div>
-        <div class="fgr"><label>Email</label><input type="email" id="owEmail" placeholder="propietario@email.com"/></div>
-        <div class="fgr full"><label>Dirección</label><input type="text" id="owDir" placeholder="Defensa 450, Cba Capital"/></div>
+        <div class="fgr"><label>Email</label><input type="email" id="owEmail" data-optional="1" data-optional="1" data-optional="1" placeholder="propietario@email.com"/></div>
+        <div class="fgr full"><label>Dirección</label><input type="text" id="owDir" data-optional="1" data-optional="1" data-optional="1" placeholder="Defensa 450, Cba Capital"/></div>
       </div>
       <div class="fs-title" style="margin-top:.8rem">Datos bancarios</div>
       <div class="fg">
-        <div class="fgr"><label>CBU</label><input type="text" id="owCbu" placeholder="0070138520000000889951"/></div>
-        <div class="fgr"><label>Alias</label><input type="text" id="owAlias" placeholder="BOLDO.CALCO.PARED"/></div>
-        <div class="fgr"><label>Banco</label><input type="text" id="owBanco" placeholder="Banco Galicia"/></div>
-        <div class="fgr"><label>Nro. Cuenta</label><input type="text" id="owCuenta" placeholder="889-9 138-5"/></div>
+        <div class="fgr"><label>CBU</label><input type="text" id="owCbu" data-optional="1" data-optional="1" data-optional="1" placeholder="0070138520000000889951"/></div>
+        <div class="fgr"><label>Alias</label><input type="text" id="owAlias" data-optional="1" data-optional="1" data-optional="1" placeholder="BOLDO.CALCO.PARED"/></div>
+        <div class="fgr"><label>Banco</label><input type="text" id="owBanco" data-optional="1" data-optional="1" data-optional="1" placeholder="Banco Galicia"/></div>
+        <div class="fgr"><label>Nro. Cuenta</label><input type="text" id="owCuenta" data-optional="1" data-optional="1" data-optional="1" placeholder="889-9 138-5"/></div>
       </div>
       <div class="fs-title" style="margin-top:.8rem">Notas</div>
-      <div class="fg c1"><div class="fgr"><textarea id="owNotas" rows="2" placeholder="Observaciones…"></textarea></div></div>
+      <div class="fg c1"><div class="fgr"><textarea id="owNotas" data-optional="1" data-optional="1" data-optional="1" rows="2" placeholder="Observaciones…"></textarea></div></div>
       <div class="mfooter"><button class="btn btn-s" onclick="closeOv('ovOwner')">Cancelar</button><button class="btn btn-p" onclick="saveOwner()">💾 Guardar</button></div>
     </div>
   </div>
@@ -525,29 +595,29 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
           <div class="fgr"><label>Estado</label><select id="prEst"><option>Disponible</option><option>Reservado</option><option>Alquilado</option></select></div>
           <div class="fgr"><label>Propietario</label><select id="prProp"><option value="">Sin asignar</option></select></div>
           <div class="fgr"><label class="chk"><input type="checkbox" id="prDest"/> Destacar ⭐</label></div>
-          <div class="fgr full"><label>Descripción</label><textarea id="prDesc" rows="3"></textarea></div>
+          <div class="fgr full"><label>Descripción</label><textarea id="prDesc" data-optional="1" data-optional="1" data-optional="1" rows="3"></textarea></div>
         </div>
       </div>
       <div id="prop-tab-ubic" class="tab-panel">
         <div class="fg">
           <div class="fgr full"><label>Dirección</label><input type="text" id="prDir" placeholder="Av. San Martín 1250, Piso 2"/></div>
-          <div class="fgr"><label>Barrio</label><input type="text" id="prBa" placeholder="Centro"/></div>
+          <div class="fgr"><label>Barrio</label><input type="text" id="prBa" data-optional="1" data-optional="1" data-optional="1" placeholder="Centro"/></div>
           <div class="fgr"><label>Ciudad</label><input type="text" id="prCi" value="Córdoba"/></div>
         </div>
       </div>
       <div id="prop-tab-caract" class="tab-panel">
         <div class="fg c3">
-          <div class="fgr"><label>Superficie m²</label><input type="number" id="prM2"/></div>
-          <div class="fgr"><label>Ambientes</label><input type="number" id="prAmb"/></div>
-          <div class="fgr"><label>Dormitorios</label><input type="number" id="prDorm"/></div>
-          <div class="fgr"><label>Baños</label><input type="number" id="prBan"/></div>
+          <div class="fgr"><label>Superficie m²</label><input type="number" id="prM2" data-optional="1" data-optional="1" data-optional="1"/></div>
+          <div class="fgr"><label>Ambientes</label><input type="number" id="prAmb" data-optional="1" data-optional="1" data-optional="1"/></div>
+          <div class="fgr"><label>Dormitorios</label><input type="number" id="prDorm" data-optional="1" data-optional="1" data-optional="1"/></div>
+          <div class="fgr"><label>Baños</label><input type="number" id="prBan" data-optional="1" data-optional="1" data-optional="1"/></div>
         </div>
         <div class="fs-title" style="margin-top:.8rem">Precio y gastos</div>
         <div class="fg">
           <div class="fgr"><label>Alquiler mensual $ *</label><input type="number" id="prPre"/></div>
-          <div class="fgr"><label>Contrato 1 año $</label><input type="number" id="prC1"/></div>
-          <div class="fgr"><label>Contrato 2 años $</label><input type="number" id="prC2"/></div>
-          <div class="fgr"><label>Informes $ c/u</label><input type="number" id="prInf"/></div>
+          <div class="fgr"><label>Contrato 1 año $</label><input type="number" id="prC1" data-optional="1" data-optional="1" data-optional="1"/></div>
+          <div class="fgr"><label>Contrato 2 años $</label><input type="number" id="prC2" data-optional="1" data-optional="1" data-optional="1"/></div>
+          <div class="fgr"><label>Informes $ c/u</label><input type="number" id="prInf" data-optional="1" data-optional="1" data-optional="1"/></div>
         </div>
       </div>
       <div id="prop-tab-media" class="tab-panel">
@@ -582,27 +652,27 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
       <div class="fg">
         <div class="fgr full"><label>Propiedad a alquilar</label><select id="tenPropId"><option value="">Sin asignar</option></select></div>
         <div class="fgr"><label>Nombre completo *</label><input type="text" id="tenNombre"/></div>
-        <div class="fgr"><label>DNI</label><input type="text" id="tenDni"/></div>
+        <div class="fgr"><label>DNI</label><input type="text" id="tenDni" data-optional="1" data-optional="1" data-optional="1"/></div>
         <div class="fgr"><label>Teléfono</label><input type="text" id="tenTel"/></div>
-        <div class="fgr"><label>Email</label><input type="email" id="tenEmail"/></div>
-        <div class="fgr"><label>Ocupación / Empleador</label><input type="text" id="tenOcup"/></div>
-        <div class="fgr"><label>Sueldo aprox. $</label><input type="number" id="tenSueldo"/></div>
-        <div class="fgr full"><label>Dirección actual</label><input type="text" id="tenDir"/></div>
-        <div class="fgr full"><label>Notas</label><textarea id="tenNotas" rows="2"></textarea></div>
+        <div class="fgr"><label>Email</label><input type="email" id="tenEmail" data-optional="1" data-optional="1" data-optional="1"/></div>
+        <div class="fgr"><label>Ocupación / Empleador</label><input type="text" id="tenOcup" data-optional="1" data-optional="1" data-optional="1"/></div>
+        <div class="fgr"><label>Sueldo aprox. $</label><input type="number" id="tenSueldo" data-optional="1" data-optional="1" data-optional="1"/></div>
+        <div class="fgr full"><label>Dirección actual</label><input type="text" id="tenDir" data-optional="1" data-optional="1" data-optional="1"/></div>
+        <div class="fgr full"><label>Notas</label><textarea id="tenNotas" data-optional="1" data-optional="1" data-optional="1" rows="2"></textarea></div>
       </div>
       <div class="fs-title" style="margin-top:.8rem">Garante 1</div>
       <div class="fg">
         <div class="fgr"><label>Nombre</label><input type="text" id="g1Nombre"/></div>
         <div class="fgr"><label>DNI</label><input type="text" id="g1Dni"/></div>
-        <div class="fgr"><label>Teléfono</label><input type="text" id="g1Tel"/></div>
-        <div class="fgr"><label>Sueldo $</label><input type="number" id="g1Sueldo"/></div>
+        <div class="fgr"><label>Teléfono</label><input type="text" id="g1Tel" data-optional="1" data-optional="1" data-optional="1"/></div>
+        <div class="fgr"><label>Sueldo $</label><input type="number" id="g1Sueldo" data-optional="1" data-optional="1" data-optional="1"/></div>
       </div>
       <div class="fs-title" style="margin-top:.8rem">Garante 2 <span style="font-weight:400;font-size:.8rem;color:var(--g)">(opcional)</span></div>
       <div class="fg">
-        <div class="fgr"><label>Nombre</label><input type="text" id="g2Nombre"/></div>
-        <div class="fgr"><label>DNI</label><input type="text" id="g2Dni"/></div>
-        <div class="fgr"><label>Teléfono</label><input type="text" id="g2Tel"/></div>
-        <div class="fgr"><label>Sueldo $</label><input type="number" id="g2Sueldo"/></div>
+        <div class="fgr"><label>Nombre</label><input type="text" id="g2Nombre" data-optional="1" data-optional="1" data-optional="1"/></div>
+        <div class="fgr"><label>DNI</label><input type="text" id="g2Dni" data-optional="1" data-optional="1" data-optional="1"/></div>
+        <div class="fgr"><label>Teléfono</label><input type="text" id="g2Tel" data-optional="1" data-optional="1" data-optional="1"/></div>
+        <div class="fgr"><label>Sueldo $</label><input type="number" id="g2Sueldo" data-optional="1" data-optional="1" data-optional="1"/></div>
       </div>
       <div class="mfooter"><button class="btn btn-s" onclick="closeOv('ovTenant')">Cancelar</button><button class="btn btn-p" onclick="saveTenant()">💾 Guardar</button></div>
     </div>
@@ -621,13 +691,13 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
         <div class="fgr"><label>Fecha inicio *</label><input type="date" id="ctIni"/></div>
         <div class="fgr"><label>Fecha fin *</label><input type="date" id="ctFin"/></div>
         <div class="fgr"><label>Valor inicial $ *</label><input type="number" id="ctValorIni" placeholder="400000"/></div>
-        <div class="fgr"><label>Alquiler actual $</label><input type="number" id="ctValorAct"/></div>
+        <div class="fgr"><label>Alquiler actual $</label><input type="number" id="ctValorAct" data-optional="1" data-optional="1" data-optional="1"/></div>
         <div class="fgr"><label>Actualización cada</label><select id="ctPeriodo"><option value="3">3 meses</option><option value="6">6 meses</option><option value="12">12 meses</option></select></div>
-        <div class="fgr"><label>Próxima actualización</label><input type="date" id="ctProxAct"/></div>
-        <div class="fgr"><label>Cta. Ecogas</label><input type="text" id="ctEcogas" placeholder="22045481"/></div>
-        <div class="fgr"><label>Cta. Cooperativa Eléctrica</label><input type="text" id="ctCoopElec" placeholder="200315"/></div>
+        <div class="fgr"><label>Próxima actualización</label><input type="date" id="ctProxAct" data-optional="1" data-optional="1" data-optional="1"/></div>
+        <div class="fgr"><label>Cta. Ecogas</label><input type="text" id="ctEcogas" data-optional="1" data-optional="1" data-optional="1" placeholder="22045481"/></div>
+        <div class="fgr"><label>Cta. Cooperativa Eléctrica</label><input type="text" id="ctCoopElec" data-optional="1" data-optional="1" data-optional="1" placeholder="200315"/></div>
         <div class="fgr"><label>Estado</label><select id="ctEst2"><option>Activo</option><option>Vencido</option><option>Rescindido</option></select></div>
-        <div class="fgr full"><label>Notas / Cláusulas especiales</label><textarea id="ctNotas" rows="2"></textarea></div>
+        <div class="fgr full"><label>Notas / Cláusulas especiales</label><textarea id="ctNotas" data-optional="1" data-optional="1" data-optional="1" rows="2"></textarea></div>
       </div>
       <div class="fs-title" style="margin-top:.8rem">📎 Contrato escaneado (PDF)</div>
       <div class="media-drop" onclick="document.getElementById('ctPdfInput').click()" style="padding:.9rem">
@@ -653,11 +723,11 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
         <div class="fgr"><label>Alquiler $</label><input type="number" id="pagoAlq"/></div>
         <div class="fgr"><label>Agua $</label><input type="number" id="pagoAgua"/></div>
         <div class="fgr"><label>Tasa municipal $</label><input type="number" id="pagoTasa"/></div>
-        <div class="fgr"><label>Extra $</label><input type="number" id="pagoExtra" placeholder="0"/></div>
-        <div class="fgr"><label>Concepto extra</label><input type="text" id="pagoExtraDet" placeholder="Ej: reparación"/></div>
+        <div class="fgr"><label>Extra $</label><input type="number" id="pagoExtra" data-optional="1" data-optional="1" data-optional="1" placeholder="0"/></div>
+        <div class="fgr"><label>Concepto extra</label><input type="text" id="pagoExtraDet" data-optional="1" data-optional="1" data-optional="1" placeholder="Ej: reparación"/></div>
         <div class="fgr"><label>Estado</label><select id="pagoEstado"><option>Pendiente</option><option>Pagado</option><option>Vencido</option></select></div>
-        <div class="fgr"><label>Fecha de pago</label><input type="date" id="pagoFechaPago"/></div>
-        <div class="fgr"><label>Notas</label><textarea id="pagoNotas" rows="2"></textarea></div>
+        <div class="fgr"><label>Fecha de pago</label><input type="date" id="pagoFechaPago" data-optional="1" data-optional="1" data-optional="1"/></div>
+        <div class="fgr"><label>Notas</label><textarea id="pagoNotas" data-optional="1" data-optional="1" data-optional="1" rows="2"></textarea></div>
       </div>
       <div class="mfooter"><button class="btn btn-s" onclick="closeOv('ovPago')">Cancelar</button><button class="btn btn-p" onclick="savePago()">💾 Guardar</button></div>
     </div>
@@ -676,14 +746,14 @@ tbody td{padding:.72rem .9rem;font-size:.85rem;vertical-align:middle}
         <div class="fgr"><label>Fecha</label><input type="date" id="clFecha"/></div>
         <div class="fgr"><label>Tipo</label><select id="clTipo"><option>Entrega de llaves</option><option>Devolución</option></select></div>
         <div class="fgr full"><label>Dirección / Inmueble</label><input type="text" id="clDomicilio"/></div>
-        <div class="fgr"><label>Manzana</label><input type="text" id="clManzana"/></div>
-        <div class="fgr"><label>Lote</label><input type="text" id="clLote"/></div>
+        <div class="fgr"><label>Manzana</label><input type="text" id="clManzana" data-optional="1" data-optional="1" data-optional="1"/></div>
+        <div class="fgr"><label>Lote</label><input type="text" id="clLote" data-optional="1" data-optional="1" data-optional="1"/></div>
       </div>
       <div id="checklistFormItems"></div>
       <!-- FIRMAS -->
       <div style="margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid #f0f0f0">
         <div style="font-size:.78rem;font-weight:700;color:#4aaa5a;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">✍️ Firmas digitales</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem" class="firmas-grid-mobile">
 
           <!-- Firma admin -->
           <div style="border:1px solid #dde;border-radius:10px;overflow:hidden">
@@ -936,7 +1006,7 @@ function renderProps(){
       <td><div class="td-acts">
         <button class="btn btn-s btn-xs" onclick="editProp('${p.id}')">✏️</button>
         <button class="btn btn-w btn-xs" onclick="nextEstadoProp('${p.id}')">🔄</button>
-        <button class="btn btn-d btn-xs" onclick="confirm_('¿Eliminar "${p.titulo}"?',()=>delDoc('propiedades','${p.id}'))">🗑</button>
+        <button class="btn btn-d btn-xs" onclick="confirmDel('propiedades','${p.id}','propiedad')">🗑</button>
       </div></td></tr>`;
   }).join('');
 }
@@ -1164,6 +1234,7 @@ function openOwnerForm(id){
 }
 function editOwner(id){openOwnerForm(id);}
 async function saveOwner(){
+  if(!validateForm('ovOwner'))return;
   const nombre=document.getElementById('owNombre').value.trim();
   if(!nombre){toast('⚠️ El nombre es obligatorio','err');return;}
   const data={nombre,cuit:v('owCuit'),iva:document.getElementById('owIva').value,telefono:v('owTel'),email:v('owEmail'),direccion:v('owDir'),cbu:v('owCbu'),alias:v('owAlias'),banco:v('owBanco'),cuenta:v('owCuenta'),notas:v('owNotas'),updatedAt:new Date().toISOString()};
@@ -1199,6 +1270,7 @@ function openPropForm(id){
 }
 function editProp(id){openPropForm(id);}
 async function saveProp(){
+  if(!validateForm('ovProp'))return;
   const titulo=document.getElementById('prTit').value.trim();
   const precio=+document.getElementById('prPre').value;
   if(!titulo){toast('⚠️ El título es obligatorio','err');return;}
@@ -1263,6 +1335,7 @@ function openTenantForm(id){
 }
 function editTenant(id){openTenantForm(id);}
 async function saveTenant(){
+  if(!validateForm('ovTenant'))return;
   const nombre=document.getElementById('tenNombre').value.trim();
   if(!nombre){toast('⚠️ El nombre es obligatorio','err');return;}
   const propIdTen=document.getElementById('tenPropId').value||null;
@@ -1302,6 +1375,7 @@ function openContratoForm(id){
 function editContrato(id){openContratoForm(id);}
 function handleCtPdf(e){ctPdfFile=e.target.files[0];document.getElementById('ctPdfName').textContent=`📄 ${ctPdfFile.name}`;}
 async function saveContrato(){
+  if(!validateForm('ovContrato'))return;
   const propId=document.getElementById('ctProp').value;
   const tenId=document.getElementById('ctTen').value;
   const ini=document.getElementById('ctIni').value;
@@ -1356,6 +1430,7 @@ function openPagoForm(id){
 }
 function editPago(id){openPagoForm(id);}
 async function savePago(){
+  if(!validateForm('ovPago'))return;
   const ctId=document.getElementById('pagoContrato').value;
   const mesAno=document.getElementById('pagoMesAno').value;
   if(!ctId||!mesAno){toast('⚠️ Seleccioná contrato y mes','err');return;}
@@ -1536,6 +1611,7 @@ async function marcarFirmado(id){
 }
 
 async function saveChecklist(){
+  if(!validateForm('ovChecklist'))return;
   const propId=document.getElementById('clProp').value;
   if(!propId){toast('⚠️ Seleccioná una propiedad','err');return;}
   const pr=props.find(p=>p.id===propId);
@@ -1755,6 +1831,41 @@ document.addEventListener('DOMContentLoaded', function() {
 function openOv(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
 function closeOv(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
 function closeOvIf(e,id){if(e.target===document.getElementById(id))closeOv(id);}
+// ── VALIDACIÓN ───────────────────────────────────────────────────────────
+function validateForm(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return true;
+  let valid = true;
+  // Clear previous errors
+  modal.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+  // Check all inputs, selects, textareas (except hidden and type=file)
+  const fields = modal.querySelectorAll('input:not([type=hidden]):not([type=file]):not([type=radio]):not([type=checkbox]), select, textarea');
+  fields.forEach(el => {
+    const val = el.value?.trim();
+    // Skip optional fields marked with data-optional
+    if (el.dataset.optional) return;
+    // Skip fields inside firma section
+    if (el.closest('.firma-section') || el.closest('[style*="firma"]')) return;
+    // Skip comment fields in checklist
+    if (el.id?.includes('_comment')) return;
+    // Skip pagoMes selector (auto-generated)
+    if (el.id === 'pagoMes') return;
+    if (!val) {
+      el.classList.add('invalid');
+      el.addEventListener('input', () => el.classList.remove('invalid'), {once:true});
+      el.addEventListener('change', () => el.classList.remove('invalid'), {once:true});
+      valid = false;
+    }
+  });
+  if (!valid) {
+    // Scroll to first invalid field
+    const first = modal.querySelector('.invalid');
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    toast('⚠️ Completá todos los campos obligatorios', 'err');
+  }
+  return valid;
+}
+
 function confirmDel(col, id, name) {
   const label = name && name.length < 40 ? ('"' + name + '"') : 'este registro';
   confirm_('¿Eliminar ' + label + '? Esta acción no se puede deshacer.', () => delDoc(col, id));

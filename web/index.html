@@ -134,6 +134,8 @@
   .mod-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:.65rem;margin-bottom:1.7rem}
   .mod-gal img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;cursor:pointer;transition:transform .2s}
   .mod-gal img:hover{transform:scale(1.02)}
+  .mod-gal video{width:100%;border-radius:8px;display:block;background:#000}
+  .mod-gal>div{border-radius:8px}
   .mod-gal .nip{aspect-ratio:4/3;border-radius:8px;background:linear-gradient(135deg,#e8f0e9,#d0e8d4);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.28rem;color:#8ab890}
   .mod-feats{display:flex;gap:.9rem;flex-wrap:wrap;margin-bottom:1.4rem}
   .mf-item{display:flex;flex-direction:column;align-items:center;gap:.18rem;background:var(--gris-l);border-radius:10px;padding:.65rem 1.1rem;min-width:76px}
@@ -432,7 +434,12 @@ function mkCard(p) {
 
   const imgHtml = p.imagenes?.length
     ? `<img src="${p.imagenes[0]}" alt="${p.titulo||''}" loading="lazy"/>`
-    : `<div class="no-img"><span>${tipoIco(p.tipo)}</span><small>Sin fotos</small></div>`;
+    : p.videos?.length
+      ? `<div style="position:relative;width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center">
+           <video src="${p.videos[0]}" style="width:100%;height:100%;object-fit:cover" preload="metadata" muted playsinline></video>
+           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25)"><span style="font-size:2rem">▶️</span></div>
+         </div>`
+      : `<div class="no-img"><span>${tipoIco(p.tipo)}</span><small>Sin fotos</small></div>`;
 
   const div = document.createElement('div');
   div.className = `pc fu${curView==='list'?' lm':''}`;
@@ -486,8 +493,12 @@ function openMod(id) {
 
 function buildModBody(p) {
   const isFav = favs.includes(p.id);
-  const galHtml = p.imagenes?.length
-    ? `<div class="mod-gal">${p.imagenes.map((u,i)=>`<img src="${u}" onclick="openLB(${i})" loading="lazy"/>`).join('')}</div>`
+  const vidHtml = (p.videos||[]).map(u=>`
+    <div style="position:relative;border-radius:8px;overflow:hidden;background:#000;aspect-ratio:16/9">
+      <video src="${u}" controls preload="metadata" style="width:100%;height:100%;object-fit:contain;display:block" playsinline></video>
+    </div>`).join('');
+  const galHtml = (p.imagenes?.length || p.videos?.length)
+    ? `<div class="mod-gal">${p.imagenes?.map((u,i)=>`<img src="${u}" onclick="openLB(${i})" loading="lazy"/>`).join('')||''}${vidHtml}</div>`
     : `<div class="mod-gal"><div class="nip"><span style="font-size:3rem">${tipoIco(p.tipo)}</span><small style="font-size:.78rem;color:#8ab890">Sin fotos disponibles</small></div></div>`;
 
   const feats = [
