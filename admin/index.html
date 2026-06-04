@@ -851,13 +851,19 @@ let mediaFiles=[], ctPdfFile=null;
 let editingId={owner:null,prop:null,tenant:null,contrato:null,pago:null,checklist:null};
 
 // ── AUTH ──────────────────────────────────────────────────────────────────
+// Flag: evita que onAuthStateChanged entre a la app automáticamente
+// en el primer disparo (race condition con Face ID / autocompletado del navegador).
+// Solo se permite entrar después de que el usuario presionó el botón de login.
+let userInitiatedLogin = false;
+
 auth.onAuthStateChanged(u=>{
-  if(u){
+  if(u && userInitiatedLogin){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('appShell').style.display='block';
     document.getElementById('sbUser').textContent=u.email;
     initListeners();
-  } else {
+  } else if(!u){
+    userInitiatedLogin = false;
     document.getElementById('loginScreen').style.display='flex';
     document.getElementById('appShell').style.display='none';
   }
@@ -869,8 +875,15 @@ async function doLogin(){
   if(!email||!pass){showLErr('Completá email y contraseña.');return;}
   document.getElementById('lerr').classList.remove('show');
   btn.classList.add('ld');btn.disabled=true;
-  try{await auth.signInWithEmailAndPassword(email,pass);}
-  catch(e){const m={'auth/wrong-password':'Contraseña incorrecta.','auth/user-not-found':'Email no registrado.','auth/invalid-credential':'Credenciales inválidas.','auth/api-key-not-valid.-please-pass-a-valid-api-key.':'API Key inválida. Revisá firebase-config.js'};showLErr(m[e.code]||e.message);btn.classList.remove('ld');btn.disabled=false;}
+  try{
+    userInitiatedLogin = true;
+    await auth.signInWithEmailAndPassword(email,pass);
+  }
+  catch(e){
+    userInitiatedLogin = false;
+    const m={'auth/wrong-password':'Contraseña incorrecta.','auth/user-not-found':'Email no registrado.','auth/invalid-credential':'Credenciales inválidas.','auth/api-key-not-valid.-please-pass-a-valid-api-key.':'API Key inválida. Revisá firebase-config.js'};
+    showLErr(m[e.code]||e.message);btn.classList.remove('ld');btn.disabled=false;
+  }
 }
 function showLErr(m){document.getElementById('lerrTxt').textContent=m;document.getElementById('lerr').classList.add('show');}
 function doLogout(){auth.signOut();}
