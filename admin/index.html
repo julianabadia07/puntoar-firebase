@@ -231,6 +231,12 @@ tbody td{padding:.72rem .9rem;font-size:var(--text-md);vertical-align:middle}
 .info-box{background:var(--vl);border:1px solid #c8e6cc;border-radius:9px;padding:.85rem 1.1rem;font-size:var(--text-sm);color:#2d6a35;margin-bottom:1.1rem;display:flex;align-items:flex-start;gap:.5rem}
 
 /* CHECKLIST */
+.cl-config-bar{display:flex;align-items:center;gap:1rem;padding:.65rem 1rem;background:#f4f5f4;border-radius:8px;border:1px solid var(--border);margin-bottom:.85rem;flex-wrap:wrap}
+.cl-config-item{display:flex;align-items:center;gap:.5rem;font-size:var(--text-sm)}
+.cl-config-item label{font-weight:600;color:var(--n);white-space:nowrap}
+.cl-counter{display:flex;align-items:center;gap:.2rem}
+.cl-counter button{background:var(--v);color:#fff;border:none;border-radius:5px;width:24px;height:24px;font-size:1rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700}
+.cl-counter input{width:40px;text-align:center;border:1.5px solid var(--border);border-radius:5px;padding:.2rem .25rem;font-size:var(--text-sm);font-weight:600;color:var(--n)}
 .cl-section{margin-bottom:1.4rem}
 .cl-section h3{font-size:var(--text-sm);font-weight:700;color:var(--v);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.75rem;padding:.5rem .75rem;background:var(--vl);border-radius:7px}
 .cl-grid{display:grid;grid-template-columns:1fr;gap:.4rem}
@@ -504,7 +510,7 @@ tbody td{padding:.72rem .9rem;font-size:var(--text-md);vertical-align:middle}
 <aside class="sidebar" id="sidebar">
   <div class="sb-logo">
     <img id="sbLogo" alt="PuntoAr"/>
-    <div class="slt"><div>PuntoAr</div><span>Admin v3</span></div>
+    <div class="slt"><div>PuntoAr</div><span>Admin v4</span></div>
   </div>
   <nav class="sb-nav">
     <div class="sb-sec">Principal</div>
@@ -588,7 +594,7 @@ tbody td{padding:.72rem .9rem;font-size:var(--text-md);vertical-align:middle}
     <div id="sec-propiedades" class="section" style="display:none">
       <div class="search-bar">
         <input type="text" id="pSearch" placeholder="🔍 Buscar propiedad…" oninput="renderProps()"/>
-        <select id="pTipo" onchange="renderProps()"><option value="">Todos los tipos</option><option>Departamento</option><option>Casa</option><option>Local comercial</option><option>Terreno</option></select>
+        <select id="pTipo" onchange="renderProps()"><option value="">Todos los tipos</option><option>Departamento</option><option>Casa</option><option>Duplex</option><option>Local comercial</option><option>Terreno</option></select>
         <select id="pEst" onchange="renderProps()"><option value="">Todo estado</option><option>Disponible</option><option>Reservado</option><option>Alquilado</option></select>
         <select id="pProp" onchange="renderProps()"><option value="">Todos los propietarios</option></select>
 
@@ -801,7 +807,7 @@ tbody td{padding:.72rem .9rem;font-size:var(--text-md);vertical-align:middle}
       <div id="prop-tab-info" class="tab-panel active">
         <div class="fg">
           <div class="fgr full"><label>Título *</label><input type="text" id="prTit" placeholder="Departamento 2 dormitorios – Centro"/></div>
-          <div class="fgr"><label>Tipo *</label><select id="prTipo"><option>Departamento</option><option>Casa</option><option>Local comercial</option><option>Terreno</option></select></div>
+          <div class="fgr"><label>Tipo *</label><select id="prTipo"><option>Departamento</option><option>Casa</option><option>Duplex</option><option>Local comercial</option><option>Terreno</option></select></div>
           <div class="fgr"><label>Estado</label><select id="prEst"><option>Disponible</option><option>Reservado</option><option>Alquilado</option></select></div>
           <div class="fgr"><label>Propietario</label><select id="prProp"><option value="">Sin asignar</option></select></div>
           <div class="fgr"><label class="chk"><input type="checkbox" id="prDest"/> Destacar ⭐</label></div>
@@ -963,17 +969,32 @@ tbody td{padding:.72rem .9rem;font-size:var(--text-md);vertical-align:middle}
     <div class="mhdr"><h2 id="pagoFormTitle">💰 Registrar Pago</h2><button class="mcls" onclick="closeOv('ovPago')">✕</button></div>
     <div class="mbody">
       <input type="hidden" id="pagoId"/>
+      <!-- Modo: con o sin contrato -->
+      <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+        <button id="btnPagoModoContrato" class="btn btn-p btn-sm" style="flex:1" type="button" onclick="setPagoModo('contrato')">📄 Con contrato</button>
+        <button id="btnPagoModoProp" class="btn btn-s btn-sm" style="flex:1" type="button" onclick="setPagoModo('propiedad')">🏠 Sin contrato</button>
+      </div>
+      <!-- Con contrato -->
+      <div id="pagoModoContratoGrp">
+        <div class="fgr" style="margin-bottom:.75rem"><label>Contrato *</label><select id="pagoContrato" onchange="onPagoContratoChange()"><option value="">Seleccionar contrato activo…</option></select></div>
+      </div>
+      <!-- Sin contrato -->
+      <div id="pagoModoPropGrp" style="display:none">
+        <div class="fg c2" style="margin-bottom:.75rem">
+          <div class="fgr"><label>Propiedad *</label><select id="pagoProp"><option value="">Seleccionar propiedad…</option></select></div>
+          <div class="fgr"><label>Inquilino (opcional)</label><select id="pagoTen" data-optional="1"><option value="">Sin inquilino</option></select></div>
+        </div>
+      </div>
       <div class="fg c1">
-        <div class="fgr"><label>Contrato / Propiedad *</label><select id="pagoContrato"><option value="">Seleccionar…</option></select></div>
         <div class="fgr"><label>Mes y año *</label><input type="month" id="pagoMesAno"/></div>
         <div class="fgr"><label>Alquiler $</label><input type="number" id="pagoAlq"/></div>
         <div class="fgr"><label>Agua $</label><input type="number" id="pagoAgua"/></div>
         <div class="fgr"><label>Tasa municipal $</label><input type="number" id="pagoTasa"/></div>
-        <div class="fgr"><label>Extra $</label><input type="number" id="pagoExtra" data-optional="1" data-optional="1" data-optional="1" placeholder="0"/></div>
-        <div class="fgr"><label>Concepto extra</label><input type="text" id="pagoExtraDet" data-optional="1" data-optional="1" data-optional="1" placeholder="Ej: reparación"/></div>
+        <div class="fgr"><label>Extra $</label><input type="number" id="pagoExtra" data-optional="1" placeholder="0"/></div>
+        <div class="fgr"><label>Concepto extra</label><input type="text" id="pagoExtraDet" data-optional="1" placeholder="Ej: reparación"/></div>
         <div class="fgr"><label>Estado</label><select id="pagoEstado"><option>Pendiente</option><option>Pagado</option><option>Vencido</option></select></div>
-        <div class="fgr"><label>Fecha de pago</label><input type="date" id="pagoFechaPago" data-optional="1" data-optional="1" data-optional="1"/></div>
-        <div class="fgr"><label>Notas</label><textarea id="pagoNotas" data-optional="1" data-optional="1" data-optional="1" rows="2"></textarea></div>
+        <div class="fgr"><label>Fecha de pago</label><input type="date" id="pagoFechaPago" data-optional="1"/></div>
+        <div class="fgr"><label>Notas</label><textarea id="pagoNotas" data-optional="1" rows="2"></textarea></div>
       </div>
       <div class="mfooter"><button class="btn btn-s" onclick="closeOv('ovPago')">Cancelar</button><button class="btn btn-p" onclick="savePago()">💾 Guardar</button></div>
     </div>
@@ -994,6 +1015,25 @@ tbody td{padding:.72rem .9rem;font-size:var(--text-md);vertical-align:middle}
         <div class="fgr full"><label>Dirección / Inmueble</label><input type="text" id="clDomicilio"/></div>
         <div class="fgr"><label>Manzana</label><input type="text" id="clManzana" data-optional="1" data-optional="1" data-optional="1"/></div>
         <div class="fgr"><label>Lote</label><input type="text" id="clLote" data-optional="1" data-optional="1" data-optional="1"/></div>
+      </div>
+      <div class="cl-config-bar" id="clConfigBar">
+        <div class="cl-config-item">
+          <label>🚿 Baños</label>
+          <div class="cl-counter">
+            <button type="button" onclick="adjClCount('clNumBanos',-1)">−</button>
+            <input type="number" id="clNumBanos" value="1" min="1" max="5" oninput="buildChecklistForm(null)"/>
+            <button type="button" onclick="adjClCount('clNumBanos',1)">+</button>
+          </div>
+        </div>
+        <div class="cl-config-item">
+          <label>🛏 Dormitorios</label>
+          <div class="cl-counter">
+            <button type="button" onclick="adjClCount('clNumDorm',-1)">−</button>
+            <input type="number" id="clNumDorm" value="1" min="0" max="8" oninput="buildChecklistForm(null)"/>
+            <button type="button" onclick="adjClCount('clNumDorm',1)">+</button>
+          </div>
+        </div>
+        <button class="btn btn-s btn-sm" type="button" onclick="buildChecklistForm(null)" style="margin-left:auto">🔄 Regenerar</button>
       </div>
       <div id="checklistFormItems"></div>
       <!-- FIRMAS -->
@@ -1112,20 +1152,21 @@ function enterApp(u){
   document.getElementById('appShell').style.display='block';
   document.getElementById('sbUser').textContent=u.email;
   initListeners();
+  const lastPage=localStorage.getItem('lastPage')||'dashboard';
+  nav(lastPage);
 }
 
 auth.onAuthStateChanged(u=>{
   if(!authReady){
-    // Primer disparo: solo muestra el login, nunca abre la app sola.
     authReady = true;
-    if(!u){
+    if(u){
+      enterApp(u);
+    } else {
       document.getElementById('loginScreen').style.display='flex';
       document.getElementById('appShell').style.display='none';
     }
-    // Si u existe aquí es sesión persistida — esperamos interacción del usuario.
     return;
   }
-  // Disparos posteriores (logout, expiración de token, etc.)
   if(!u){
     document.getElementById('loginScreen').style.display='flex';
     document.getElementById('appShell').style.display='none';
@@ -1211,6 +1252,7 @@ const PAGE_CTA={'propiedades':['➕ Nueva propiedad',()=>openPropForm()],'propie
 let curPage='dashboard';
 function nav(page){
   curPage=page;
+  try{localStorage.setItem('lastPage',page);}catch(e){}
   document.querySelectorAll('.section').forEach(s=>s.style.display='none');
   const sec=document.getElementById(`sec-${page}`);
   if(sec) sec.style.display='block';
@@ -1679,7 +1721,7 @@ function handleImportFile(e){
     const delim = detectDelimiter(lines[0]);
     // skip header row
     const dataLines = lines.slice(1);
-    const TIPOS_VALIDOS = ['Departamento','Casa','Local comercial','Terreno'];
+    const TIPOS_VALIDOS = ['Departamento','Casa','Duplex','Local comercial','Terreno'];
     const ESTADOS_VALIDOS = ['Disponible','Reservado','Alquilado'];
 
     importPropRows = dataLines.map((line, idx) => {
@@ -1823,11 +1865,13 @@ function autoFillChecklist(){
   if(!propId)return;
   const p=props.find(x=>x.id===propId);
   if(!p)return;
-  // Auto-fill address
   if(p.direccion) document.getElementById('clDomicilio').value=p.direccion;
-  // Auto-fill tenant from active contract
   const ct=contratos.find(c=>c.propiedadId===propId&&c.estado==='Activo');
   if(ct&&document.getElementById('clTen')) document.getElementById('clTen').value=ct.inquilinoId||'';
+  currentClTipoProp=p.tipo||'Departamento';
+  document.getElementById('clNumBanos').value=p.banos||1;
+  document.getElementById('clNumDorm').value=p.dormitorios||1;
+  buildChecklistForm(null);
 }
 
 function renderChecklists(){
@@ -2093,37 +2137,70 @@ async function saveContrato(){
 }
 
 // ── PAGOS ─────────────────────────────────────────────────────────────────
+function setPagoModo(modo){
+  const esCt=modo==='contrato';
+  document.getElementById('pagoModoContratoGrp').style.display=esCt?'':'none';
+  document.getElementById('pagoModoPropGrp').style.display=esCt?'none':'';
+  document.getElementById('btnPagoModoContrato').className='btn btn-sm '+(esCt?'btn-p':'btn-s');
+  document.getElementById('btnPagoModoContrato').style.flex='1';
+  document.getElementById('btnPagoModoProp').className='btn btn-sm '+(esCt?'btn-s':'btn-p');
+  document.getElementById('btnPagoModoProp').style.flex='1';
+  document.getElementById('pagoContrato')._modoActivo=modo;
+}
+function onPagoContratoChange(){
+  const ct=contratos.find(x=>x.id===document.getElementById('pagoContrato').value);
+  if(ct) document.getElementById('pagoAlq').value=ct.valorActual||ct.valorInicial||'';
+}
 function openPagoForm(id){
   editingId.pago=id||null;
   clearFields(['pagoId','pagoAlq','pagoAgua','pagoTasa','pagoExtra','pagoExtraDet','pagoFechaPago','pagoNotas']);
   document.getElementById('pagoFormTitle').textContent=id?'✏️ Editar Pago':'💰 Nuevo Pago';
   const hoy=new Date();
   document.getElementById('pagoMesAno').value=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}`;
-  // Populate contrato select fresh
-  const pagoCtEl=document.getElementById('pagoContrato');
-  pagoCtEl.innerHTML='<option value="">Seleccionar contrato…</option>'+contratos.filter(c=>c.estado==='Activo').map(c=>`<option value="${c.id}">${c.propNombre} – ${c.tenNombre}</option>`).join('');
-  // Auto-fill alquiler when contrato selected
-  pagoCtEl.onchange=function(){
-    const ct=contratos.find(x=>x.id===this.value);
-    if(ct){document.getElementById('pagoAlq').value=ct.valorActual||ct.valorInicial||'';}
-  };
-  if(id){const p=pagos.find(x=>x.id===id);if(!p)return;
+  // Populate selects
+  document.getElementById('pagoContrato').innerHTML='<option value="">Seleccionar contrato activo…</option>'+contratos.filter(c=>c.estado==='Activo').map(c=>`<option value="${c.id}">${c.propNombre} – ${c.tenNombre}</option>`).join('');
+  document.getElementById('pagoProp').innerHTML='<option value="">Seleccionar propiedad…</option>'+props.map(p=>`<option value="${p.id}">${p.titulo}</option>`).join('');
+  document.getElementById('pagoTen').innerHTML='<option value="">Sin inquilino</option>'+tenants.map(t=>`<option value="${t.id}">${t.nombre}</option>`).join('');
+  if(id){
+    const p=pagos.find(x=>x.id===id);if(!p)return;
     setFields({pagoId:p.id,pagoAlq:p.alquiler,pagoAgua:p.agua,pagoTasa:p.tasa,pagoExtra:p.extra,pagoExtraDet:p.extraDetalle,pagoFechaPago:p.fechaPago,pagoNotas:p.notas});
-    document.getElementById('pagoContrato').value=p.contratoId||'';
     document.getElementById('pagoMesAno').value=p.mesAno||'';
     document.getElementById('pagoEstado').value=p.estado||'Pendiente';
+    if(p.contratoId){
+      setPagoModo('contrato');
+      document.getElementById('pagoContrato').value=p.contratoId;
+    }else{
+      setPagoModo('propiedad');
+      document.getElementById('pagoProp').value=p.propiedadId||'';
+      document.getElementById('pagoTen').value=p.inquilinoId||'';
+    }
+  }else{
+    setPagoModo('contrato');
   }
   openOv('ovPago');
 }
 function editPago(id){openPagoForm(id);}
 async function savePago(){
   if(!validateForm('ovPago'))return;
-  const ctId=document.getElementById('pagoContrato').value;
   const mesAno=document.getElementById('pagoMesAno').value;
-  if(!ctId||!mesAno){toast('⚠️ Seleccioná contrato y mes','err');return;}
-  const ct=contratos.find(c=>c.id===ctId);
+  if(!mesAno){toast('⚠️ Seleccioná el mes','err');return;}
+  const modo=document.getElementById('pagoContrato')._modoActivo||'contrato';
   const alq=+v('pagoAlq')||0,agua=+v('pagoAgua')||0,tasa=+v('pagoTasa')||0,extra=+v('pagoExtra')||0;
-  const data={contratoId:ctId,propNombre:ct?.propNombre||'',tenNombre:ct?.tenNombre||'',
+  let contratoId=null,propNombre='',tenNombre='',propiedadId=null,inquilinoId=null;
+  if(modo==='contrato'){
+    contratoId=document.getElementById('pagoContrato').value;
+    if(!contratoId){toast('⚠️ Seleccioná un contrato','err');return;}
+    const ct=contratos.find(c=>c.id===contratoId);
+    propNombre=ct?.propNombre||'';tenNombre=ct?.tenNombre||'';
+    propiedadId=ct?.propiedadId||null;inquilinoId=ct?.inquilinoId||null;
+  }else{
+    propiedadId=document.getElementById('pagoProp').value;
+    if(!propiedadId){toast('⚠️ Seleccioná una propiedad','err');return;}
+    const pr=props.find(p=>p.id===propiedadId);
+    const te=tenants.find(t=>t.id===document.getElementById('pagoTen').value);
+    propNombre=pr?.titulo||'';tenNombre=te?.nombre||'';inquilinoId=te?.id||null;
+  }
+  const data={contratoId,propiedadId,inquilinoId,propNombre,tenNombre,
     mesAno,alquiler:alq,agua,tasa,extra,extraDetalle:v('pagoExtraDet'),
     total:alq+agua+tasa+extra,estado:document.getElementById('pagoEstado').value,
     fechaPago:v('pagoFechaPago')||null,notas:v('pagoNotas'),updatedAt:new Date().toISOString()};
@@ -2168,7 +2245,7 @@ function generarFactura(contratoId){
 function generarFacturaPago(pagoId){
   const p=pagos.find(x=>x.id===pagoId);if(!p)return;
   const ct=contratos.find(c=>c.id===p.contratoId);
-  const pr=ct?props.find(x=>x.id===ct.propiedadId):null;
+  const pr=props.find(x=>x.id===(ct?.propiedadId||p.propiedadId));
   const ow=pr?owners.find(o=>o.id===pr.propietarioId):null;
   mostrarFactura(ct,p,pr,ow);
 }
@@ -2223,20 +2300,73 @@ function mostrarFactura(ct,p,pr,ow){
 function printFactura(){window.print();}
 
 // ── CHECKLIST ─────────────────────────────────────────────────────────────
-const CL_SECTIONS=[
-  {title:'SERVICIOS',items:['Luz activa','Gas activo']},
-  {title:'SANITARIOS – COCINA Y LAVADERO',items:['Bacha de cocina en buen estado','Tiene tapón','Sifón cocina no pierde','Grifería cocina funciona','Bacha de lavadero en buen estado','Grifería lavadero funciona','Canilla para lavarropas']},
-  {title:'BAÑO',items:['Inodoro completo','Flexibles en buen estado','Inodoro sellado','Bidet en buen estado','Lavatorio en buen estado','Grifería de ducha completa','Sellado de ducha','Rejilla de piso en buen estado','Tiene espejo','Tiene portarrollo','Tiene toallero']},
-  {title:'TERMOTANQUE / CALEFACTOR',items:['Termotanque funciona correctamente','Fue limpiado por dentro','Tiene palanca de corte','Calefactor en buen estado','Sin pérdida de gas']},
-  {title:'ELECTRICIDAD',items:['Tiene plafón LED en todos los ambientes','Enchufes funcionan','Tablero con tapa','Tiene térmicas y disyuntores']},
-  {title:'PUERTAS Y VENTANAS',items:['Puertas placas en buen estado','Picaportes funcionan','Cerraduras tienen llaves','Cierran correctamente todas las puertas','Ventanas con todos los vidrios','Cierres de ventanas funcionan']},
-  {title:'MUEBLES',items:['Muebles de cocina en buen estado','Alacenas con estantes','Placares con puertas','Cajones funcionan']},
-  {title:'PINTURA Y PISOS',items:['Cielorrasos pintados','Paredes pintadas','Sin cerámico roto o faltante','Zócalos en buen estado','Sin manchas de humedad']},
-];
+const CL_BANO_ITEMS=['Inodoro completo','Flexibles en buen estado','Inodoro sellado','Bidet en buen estado','Lavatorio en buen estado','Grifería de ducha completa','Sellado de ducha','Rejilla de piso en buen estado','Tiene espejo','Tiene portarrollo','Tiene toallero'];
+const CL_DORM_ITEMS=['Puerta en buen estado','Picaporte funciona','Ventana con vidrios','Cierre de ventana funciona','Pintura en buen estado','Piso sin daños','Placard con puertas y cajones'];
+const CL_SECTIONS_FIXED={
+  Departamento:[
+    {title:'SERVICIOS',items:['Luz activa','Gas activo']},
+    {title:'SANITARIOS – COCINA Y LAVADERO',items:['Bacha de cocina en buen estado','Tiene tapón','Sifón cocina no pierde','Grifería cocina funciona','Bacha de lavadero en buen estado','Grifería lavadero funciona','Canilla para lavarropas']},
+    {dynamic:'bano'},
+    {title:'TERMOTANQUE / CALEFACTOR',items:['Termotanque funciona correctamente','Fue limpiado por dentro','Tiene palanca de corte','Calefactor en buen estado','Sin pérdida de gas']},
+    {title:'ELECTRICIDAD',items:['Tiene plafón LED en todos los ambientes','Enchufes funcionan','Tablero con tapa','Tiene térmicas y disyuntores']},
+    {title:'PUERTAS Y VENTANAS',items:['Puertas placas en buen estado','Picaportes funcionan','Cerraduras tienen llaves','Cierran correctamente todas las puertas','Ventanas con todos los vidrios','Cierres de ventanas funcionan']},
+    {dynamic:'dorm'},
+    {title:'MUEBLES',items:['Muebles de cocina en buen estado','Alacenas con estantes','Placares con puertas','Cajones funcionan']},
+    {title:'PINTURA Y PISOS',items:['Cielorrasos pintados','Paredes pintadas','Sin cerámico roto o faltante','Zócalos en buen estado','Sin manchas de humedad']},
+  ],
+  Casa:[
+    {title:'SERVICIOS',items:['Luz activa','Gas activo']},
+    {title:'SANITARIOS – COCINA Y LAVADERO',items:['Bacha de cocina en buen estado','Tiene tapón','Sifón cocina no pierde','Grifería cocina funciona','Bacha de lavadero en buen estado','Grifería lavadero funciona','Canilla para lavarropas']},
+    {dynamic:'bano'},
+    {title:'TERMOTANQUE / CALEFACTOR',items:['Termotanque funciona correctamente','Fue limpiado por dentro','Tiene palanca de corte','Calefactor en buen estado','Sin pérdida de gas']},
+    {title:'ELECTRICIDAD',items:['Tiene plafón LED en todos los ambientes','Enchufes funcionan','Tablero con tapa','Tiene térmicas y disyuntores']},
+    {title:'PUERTAS Y VENTANAS',items:['Puertas placas en buen estado','Picaportes funcionan','Cerraduras tienen llaves','Cierran correctamente todas las puertas','Ventanas con todos los vidrios','Cierres de ventanas funcionan']},
+    {dynamic:'dorm'},
+    {title:'MUEBLES',items:['Muebles de cocina en buen estado','Alacenas con estantes','Placares con puertas','Cajones funcionan']},
+    {title:'PINTURA Y PISOS',items:['Cielorrasos pintados','Paredes pintadas','Sin cerámico roto o faltante','Zócalos en buen estado','Sin manchas de humedad']},
+  ],
+  Duplex:[
+    {title:'SERVICIOS',items:['Luz activa','Gas activo']},
+    {title:'SANITARIOS – COCINA Y LAVADERO',items:['Bacha de cocina en buen estado','Tiene tapón','Sifón cocina no pierde','Grifería cocina funciona','Bacha de lavadero en buen estado','Grifería lavadero funciona','Canilla para lavarropas']},
+    {dynamic:'bano'},
+    {title:'TERMOTANQUE / CALEFACTOR',items:['Termotanque funciona correctamente','Fue limpiado por dentro','Tiene palanca de corte','Calefactor en buen estado','Sin pérdida de gas']},
+    {title:'ELECTRICIDAD',items:['Tiene plafón LED en todos los ambientes','Enchufes funcionan','Tablero con tapa','Tiene térmicas y disyuntores']},
+    {title:'PUERTAS Y VENTANAS',items:['Puertas placas en buen estado','Picaportes funcionan','Cerraduras tienen llaves','Cierran correctamente todas las puertas','Ventanas con todos los vidrios','Cierres de ventanas funcionan']},
+    {dynamic:'dorm'},
+    {title:'MUEBLES',items:['Muebles de cocina en buen estado','Alacenas con estantes','Placares con puertas','Cajones funcionan']},
+    {title:'PINTURA Y PISOS',items:['Cielorrasos pintados','Paredes pintadas','Sin cerámico roto o faltante','Zócalos en buen estado','Sin manchas de humedad']},
+  ],
+};
+let activeClSections=CL_SECTIONS_FIXED.Departamento;
+let currentClTipoProp='Departamento';
+
+function expandClSections(tipoProp,nBanos,nDorm){
+  const template=CL_SECTIONS_FIXED[tipoProp]||CL_SECTIONS_FIXED.Departamento;
+  const result=[];
+  for(const s of template){
+    if(s.dynamic==='bano'){
+      for(let i=1;i<=nBanos;i++) result.push({title:nBanos>1?`BAÑO ${i}`:'BAÑO',items:CL_BANO_ITEMS});
+    }else if(s.dynamic==='dorm'){
+      for(let i=1;i<=nDorm;i++) result.push({title:nDorm>1?`DORMITORIO ${i}`:'DORMITORIO',items:CL_DORM_ITEMS});
+    }else{
+      result.push(s);
+    }
+  }
+  return result;
+}
+function adjClCount(id,delta){
+  const el=document.getElementById(id);
+  const mn=parseInt(el.min)||0,mx=parseInt(el.max)||9;
+  el.value=Math.max(mn,Math.min(mx,(parseInt(el.value)||0)+delta));
+  buildChecklistForm(null);
+}
 
 function buildChecklistForm(data){
+  const nBanos=Math.max(1,parseInt(document.getElementById('clNumBanos')?.value)||1);
+  const nDorm=Math.max(0,parseInt(document.getElementById('clNumDorm')?.value)||0);
+  activeClSections=expandClSections(currentClTipoProp,nBanos,nDorm);
   const c=document.getElementById('checklistFormItems');
-  c.innerHTML=CL_SECTIONS.map((s,si)=>`
+  c.innerHTML=activeClSections.map((s,si)=>`
     <div class="cl-section">
       <h3>${s.title}</h3>
       <div class="cl-header-row"><span>Ítem</span><span style="text-align:center">SI</span><span style="text-align:center">NO</span><span>Comentarios</span></div>
@@ -2269,6 +2399,14 @@ function openChecklistForm(id){
     document.getElementById('clTen').value=c.inquilinoId||'';
     document.getElementById('clTipo').value=c.tipo||'Entrega de llaves';
     clData=c.items||null;
+    const pr=props.find(p=>p.id===c.propiedadId);
+    currentClTipoProp=c.tipoProp||pr?.tipo||'Departamento';
+    document.getElementById('clNumBanos').value=c.nBanos||pr?.banos||1;
+    document.getElementById('clNumDorm').value=c.nDorm!=null?c.nDorm:(pr?.dormitorios||1);
+  } else {
+    currentClTipoProp='Departamento';
+    document.getElementById('clNumBanos').value=1;
+    document.getElementById('clNumDorm').value=1;
   }
   buildChecklistForm(clData);
   openOv('ovChecklist');
@@ -2279,7 +2417,7 @@ function editChecklist(id){openChecklistForm(id);}
 
 function getChecklistData(){
   const items={};
-  CL_SECTIONS.forEach((s,si)=>{
+  activeClSections.forEach((s,si)=>{
     s.items.forEach((item,ii)=>{
       const key=`cl_${si}_${ii}`;
       const checked=document.querySelector(`input[name="${key}"]:checked`);
@@ -2305,6 +2443,9 @@ async function saveChecklist(){
   const tenId=document.getElementById('clTen').value;
   const te=tenants.find(t=>t.id===tenId);
   const data={propiedadId:propId,propNombre:pr?.titulo||'',inquilinoId:tenId||null,tenNombre:te?.nombre||'',
+    tipoProp:pr?.tipo||'Departamento',
+    nBanos:parseInt(document.getElementById('clNumBanos').value)||1,
+    nDorm:parseInt(document.getElementById('clNumDorm').value)||0,
     fecha:document.getElementById('clFecha').value,tipo:document.getElementById('clTipo').value,
     domicilio:v('clDomicilio'),manzana:v('clManzana'),lote:v('clLote'),
     items:getChecklistData(),
@@ -2393,7 +2534,7 @@ function previewChecklist(){
     <div><strong>Lote</strong>${v('clLote')||'—'}</div>
   </div>`;
 
-  CL_SECTIONS.forEach((s,si)=>{
+  activeClSections.forEach((s,si)=>{
     html+=`<div class="section-title">${s.title}</div>
     <table><thead><tr><th style="text-align:left">Ítem</th><th class="centro">SI</th><th class="centro">NO</th><th style="text-align:left">Comentarios</th></tr></thead><tbody>`;
     s.items.forEach((item,ii)=>{
@@ -2504,7 +2645,7 @@ function setFields(obj){Object.entries(obj).forEach(([id,val])=>{const el=docume
 function buildList(id,items){const c=document.getElementById(id);if(!c)return;c.innerHTML='';items.forEach(v=>addItem(id,v));}
 function addItem(id,val=''){const c=document.getElementById(id);if(!c)return;const d=document.createElement('div');d.className='dl-i';d.innerHTML='<input type="text" value="'+val+'" placeholder="Escribí acá…"/><button class="dl-rm" onclick="this.parentElement.remove()">✕</button>';c.appendChild(d);}
 function getList(id){return[...document.getElementById(id)?.querySelectorAll('input')||[]].map(i=>i.value.trim()).filter(Boolean);}
-function tipoIco(t){return{Departamento:'🏢',Casa:'🏡','Local comercial':'🏪',Terreno:'🌿'}[t]||'🏠';}
+function tipoIco(t){return{Departamento:'🏢',Casa:'🏡',Duplex:'🏘','Local comercial':'🏪',Terreno:'🌿'}[t]||'🏠';}
 function fmtP(n){return'$'+Number(n||0).toLocaleString('es-AR');}
 function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3400);}
 
@@ -2531,6 +2672,8 @@ function validateForm(modalId) {
     const val = el.value?.trim();
     // Skip optional fields marked with data-optional
     if (el.dataset.optional) return;
+    // Skip fields inside hidden containers
+    if (el.offsetParent === null) return;
     // Skip fields inside firma section
     if (el.closest('.firma-section') || el.closest('[style*="firma"]')) return;
     // Skip comment fields in checklist
